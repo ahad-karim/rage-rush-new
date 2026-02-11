@@ -16,6 +16,8 @@ char inputName[50] = "";
 int nameIndex = 0;
 int imageLoop = 0;
 bool isLeft = false;
+int doi = 0;
+int diddy = 10;
 
 
 //Do not remove this line!!!!!!
