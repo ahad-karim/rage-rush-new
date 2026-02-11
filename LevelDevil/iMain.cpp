@@ -30,8 +30,9 @@ void iDraw()
 
 	if (currentGameState == STATE_MAIN_MENU) {
 		// --- DRAW MAIN MENU ---
-		iSetColor(30, 30, 30); // Background Brown
-		iFilledRectangle(0, 0, 1080, 600);
+		//iSetColor(30, 30, 30); // Background Brown
+		//iFilledRectangle(0, 0, 1080, 600);
+		iShowImage(0, 0, 1080, 600, menubg);
 
 		iSetColor(255, 255, 255); // White for boxes
 
