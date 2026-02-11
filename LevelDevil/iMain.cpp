@@ -17,8 +17,11 @@ int nameIndex = 0;
 int imageLoop = 0;
 bool isLeft = false;
 int doi = 0;
+<<<<<<< HEAD
 int diddy = 10;
 
+=======
+>>>>>>> 8689aed62967d765d690e93baa2c3f3334cd913e
 
 //Do not remove this line!!!!!!
 GameState currentGameState = STATE_MAIN_MENU;
