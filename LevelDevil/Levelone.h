@@ -8,7 +8,7 @@ int obstacleHeight = 60;
 
 int noOfObj = 1;
 
-GameObject obj1 = { 300, 60, 100, 40, 0, 1, true };
+GameObject obj1 = { 300, 60, 100, 20, 0, 1, true };
 
 GameObject obj[] = { obj1 };
 
