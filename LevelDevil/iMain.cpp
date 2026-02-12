@@ -16,6 +16,7 @@ char inputName[50] = "";
 int nameIndex = 0;
 int imageLoop = 0;
 bool isLeft = false;
+int doi = 12;
 
 //Do not remove this line!!!!!!
 GameState currentGameState = STATE_MAIN_MENU;
