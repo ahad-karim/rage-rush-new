@@ -35,46 +35,57 @@ void updatePlayerPhysics(Player &p, bool isLeft) {
 			p.dy = 15;
 			jumpDone = true;
 		}
-		/*
-		if (isLeft) {
-			p.x -= p.dx;
-			if (hero.x <= 0) {
-				hero.x = 0;
-			}
-		}
-		else {
-			p.x += p.dx;
-			if (hero.x >= 980) {
-				hero.x = 980;
-			}
-		}
-		*/
+		
 	}
 	
 
-	/*
-	for (int i = 0; i < lvl.objectCount; i++) {
-		GameObject &obj = lvl.objects[i];
-
-		if (obj.isVisible && checkAABB(p.x, p.y, 30, 30, obj.x, obj.y, obj.width, obj.height)) {
-			// If hitting a spike, die
-			if (obj.type == 2) p.isDead = true;
-
-			// If hitting a solid block (Type 1), stop falling
-			if (obj.type == 1) {
-				if (p.dy < 0) { // Falling down
-					p.y = obj.y + obj.height;
-					p.isGrounded = true;
-					p.dy = 0;
-				}
-			}
-		}
-	}
-
-	*/
-
-	// 3. Update X Position (Similar logic for horizontal collision)
 	
-	// ... (Horizontal collision code here)
 }
 #endif
+
+
+
+
+
+/*
+if (isLeft) {
+p.x -= p.dx;
+if (hero.x <= 0) {
+hero.x = 0;
+}
+}
+else {
+p.x += p.dx;
+if (hero.x >= 980) {
+hero.x = 980;
+}
+}
+*/
+
+
+
+
+/*
+for (int i = 0; i < lvl.objectCount; i++) {
+GameObject &obj = lvl.objects[i];
+
+if (obj.isVisible && checkAABB(p.x, p.y, 30, 30, obj.x, obj.y, obj.width, obj.height)) {
+// If hitting a spike, die
+if (obj.type == 2) p.isDead = true;
+
+// If hitting a solid block (Type 1), stop falling
+if (obj.type == 1) {
+if (p.dy < 0) { // Falling down
+p.y = obj.y + obj.height;
+p.isGrounded = true;
+p.dy = 0;
+}
+}
+}
+}
+
+*/
+
+// 3. Update X Position (Similar logic for horizontal collision)
+
+// ... (Horizontal collision code here)

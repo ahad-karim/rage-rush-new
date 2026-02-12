@@ -50,6 +50,7 @@ struct GameObject {
 	int type;       // 0=Empty, 1=Block, 2=Spike, 3=MovingTrap, 4=Goal
 	int state;      // 0=Normal, 1=Triggered/Falling
 	bool isVisible;
+	bool willKill;
 };
 
 
