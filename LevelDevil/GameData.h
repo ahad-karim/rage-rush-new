@@ -16,7 +16,7 @@ enum GameState {
 	STATE_ENTER_NAME,   // 1
 	STATE_CONTINUE,     // 2
 	STATE_SCOREBOARD,   // 3
-	STATE_GAMEPLAY      // 4
+	STATE_GAMEPLAY// 4
 };
 
 // This is the actual variable that tracks which state we are in
@@ -47,7 +47,7 @@ double jumpForce = 15.0;
 struct GameObject {
 	double x, y;
 	double width, height;
-	int type;       // 0=Empty, 1=Block, 2=Spike, 3=MovingTrap, 4=Goal
+	int type;       // 1=Spike
 	int state;      // 0=Normal, 1=Triggered/Falling
 	bool isVisible;
 	bool willKill;

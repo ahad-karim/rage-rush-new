@@ -1,7 +1,7 @@
 #ifndef IMAGES_H
 #define IMAGES_H
 
-int logo, newgamebut, continuebut, volon, voloff, scores, levelbut, background1, menubg;
+int logo, newgamebut, continuebut, volon, voloff, scores, levelbut, background1, menubg, sublevel1bg;
 int rightmove1, rightmove2, rightmove3, currentImage;
 int leftmove1, leftmove2, leftmove3;
 int leftjump1, leftjump2, leftjump3, leftjump4, leftjump5;
@@ -36,6 +36,7 @@ void initImages() {
 	brick1 = iLoadImage("Images//brick1.png");
 	spikes1 = iLoadImage("Images//spikes1.png");
 	menubg = iLoadImage("Images//menubg.png");
+	sublevel1bg = iLoadImage("Images//sublevel1bg.png");
 
 	int idx = 0;
 	for (int i = 0; i < 3; i++) {

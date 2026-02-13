@@ -85,12 +85,12 @@ void iDraw()
 	}
 	else if (currentGameState == STATE_GAMEPLAY) {
 		// Brown rectangular box of size 1080 * 200 (at the top)
-		iFilledRectangle(0, 0, 1080, 200);
+		iFilledRectangle(0, 400, 1080, 200);
 		// --- DRAW LEVEL 1 PAGE ---
 
 		iSetColor(180, 110, 80); // Background Brown
-		iFilledRectangle(0, 0, 1080, 600);
-		//iShowImage(0, 0, 1080, 600, background1);
+		//iFilledRectangle(0, 0, 1080, 600);
+		iShowImage(0, 0, 1080, 600, sublevel1bg);
 
 		iSetColor(120, 70, 50); // A slightly different brown for the UI box
 
@@ -104,6 +104,8 @@ void iDraw()
 			iShowImage(i * 100-25, 20, 100, 20, brick1);
 			iShowImage(i * 100, 40, 100, 20, brick1);
 		}
+
+		//Trap loop
 		for (int i = 0; i < noOfObj; i++) {
 			iShowImage(obj[i].x, obj[i].y, obj[i].width, obj[i].height, objImg[obj[i].type]);
 		}
@@ -294,63 +296,9 @@ double interval = 1.5;
 void fixedUpdate()
 {
 	if (currentGameState == STATE_GAMEPLAY) {
-		bool onObj = false;
-		int objHeight = 0;
-		for (int i = 0; i < noOfObj; i++) {
-			if (checkAABB(hero.x, hero.y, 50, 50, obj[i].x, obj[i].y, obj[i].width, obj[i].height)) {
-				if (obj[i].willKill) {
-					hero.isDying = true;
-					break;
-				}
+		colisionDeal(hero);
 
-				if (hero.x + 45 > obj[i].x && hero.x + 5 < obj[i].x + obj[i].width) {
-					onObj = true;
-					objHeight = obj[i].height;
-				}
-				else {
-					
-				}
-
-				// 1. TOP COLLISION (Landing)
-				// We add a horizontal check: the hero must be mostly over the platform to "land" on it.
-				if (hero.dy <= 0 && (hero.y - hero.dy) >= (obj[i].y + obj[i].height - 5) &&
-					(hero.x + 45 > obj[i].x && hero.x + 5 < obj[i].x + obj[i].width))
-				{
-					hero.y = obj[i].y + obj[i].height;
-					hero.dy = 0;
-					hero.isGrounded = true;
-					jumpDone = true;
-
-
-				}
-				// 2. SIDE COLLISION
-				else
-				{
-					// HITTING LEFT SIDE (Moving Right)
-					if (hero.dx > 0 && (hero.x + 50) > obj[i].x && (hero.x + 50) < obj[i].x + 20) {
-						hero.x = obj[i].x - 50;
-					}
-					// HITTING RIGHT SIDE (Moving Left)
-					// Fix: Check if hero's left edge is entering the object's right edge
-					else if (hero.dx > 0 && hero.x < (obj[i].x + obj[i].width) && hero.x >(obj[i].x + obj[i].width - 20)) {
-						hero.x = obj[i].x + obj[i].width;
-					}
-				}
-				
-			}
-
-			
-
-		}
-
-		/*
-		if (onObj && objHeight != 0) {
-			obstacleHeight += objHeight;
-		}
-		else {
-			obstacleHeight -= objHeight;
-		}
-		*/
+		
 	}
 	
 	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))
@@ -428,8 +376,8 @@ void fixedUpdate()
 		}
 
 		hero.x += hero.dx;
-		if (hero.x >= 980) {
-			hero.x = 980;
+		if (hero.x >= 1030) {
+			hero.x = 1030;
 		}
 	}
 
@@ -437,9 +385,14 @@ void fixedUpdate()
 		// Playing the audio once
 		//mciSendString("play ggsong from 0", NULL, 0, NULL);
 		//currentImage = iLoadImage("Images//character/static.png");
+		vol = false;
+		
+			// If the use of an audio is finished, close it to free memory
+			mciSendString("stop bgsong", NULL, 0, NULL);
 	}
 	bool isMoving = (isKeyPressed('a') || isKeyPressed('d') ||
 		isSpecialKeyPressed(GLUT_KEY_LEFT) || isSpecialKeyPressed(GLUT_KEY_RIGHT) || isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP));
+
 
 	if (hero.isDying) {
 		if (imageLoop == 14) {
@@ -468,9 +421,14 @@ void fixedUpdate()
 		// Apply gravity gradually
 		if (hero.dy > obstacleHeight && !isMoving) {
 			hero.dy = 0;
+			
 		}
-		hero.dy += gravity;
-		hero.y += hero.dy;
+
+		if (!hero.isGrounded && !(isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))) {
+			hero.dy += gravity;
+			hero.y += hero.dy;
+		}
+		
 		imageLoop = 0;
 
 

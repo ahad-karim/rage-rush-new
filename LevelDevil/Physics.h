@@ -41,6 +41,67 @@ void updatePlayerPhysics(Player &p, bool isLeft) {
 
 	
 }
+
+
+void colisionDeal(Player &hero) {
+	bool onObj = false;
+	int objHeight = 0;
+	for (int i = 0; i < noOfObj; i++) {
+		if (checkAABB(hero.x, hero.y, 50, 50, obj[i].x, obj[i].y, obj[i].width, obj[i].height)) {
+			if (obj[i].willKill) {
+				hero.isDying = true;
+				break;
+			}
+
+			if (hero.x + 45 > obj[i].x && hero.x + 5 < obj[i].x + obj[i].width) {
+				onObj = true;
+				objHeight = obj[i].height;
+			}
+			else {
+				onObj = false;
+			}
+
+			// 1. TOP COLLISION (Landing)
+			// We add a horizontal check: the hero must be mostly over the platform to "land" on it.
+			if (hero.dy <= 0 && (hero.y - hero.dy) >= (obj[i].y + obj[i].height - 5) &&
+				(hero.x + 45 > obj[i].x && hero.x + 5 < obj[i].x + obj[i].width))
+			{
+				hero.y = obj[i].y + obj[i].height;
+				hero.dy = 0;
+				//hero.isGrounded = true;
+				jumpDone = true;
+
+
+			}
+			// 2. SIDE COLLISION
+			else
+			{
+				// HITTING LEFT SIDE (Moving Right)
+				if (hero.dx > 0 && (hero.x + 50) > obj[i].x && (hero.x + 50) < obj[i].x + 20) {
+					hero.x = obj[i].x - 50;
+				}
+				// HITTING RIGHT SIDE (Moving Left)
+				// Fix: Check if hero's left edge is entering the object's right edge
+				else if (hero.dx > 0 && hero.x < (obj[i].x + obj[i].width) && hero.x >(obj[i].x + obj[i].width - 20)) {
+					hero.x = obj[i].x + obj[i].width;
+				}
+			}
+
+		}
+
+
+
+	}
+
+	/*
+	if (onObj && objHeight != 0) {
+		obstacleHeight += objHeight;
+	}
+	else {
+		obstacleHeight -= objHeight;
+	}
+	*/
+}
 #endif
 
 
