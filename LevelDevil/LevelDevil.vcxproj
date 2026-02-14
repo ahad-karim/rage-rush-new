@@ -70,6 +70,7 @@
     <ClInclude Include="glut.h" />
     <ClInclude Include="iGraphics.h" />
     <ClInclude Include="Images.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Levelone.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="stb_image.h" />

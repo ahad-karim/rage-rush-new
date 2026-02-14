@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+int levelCount = 1;
+
 struct PlayerData {
 	char name[50];
 	int level;
@@ -47,11 +49,19 @@ double jumpForce = 15.0;
 struct GameObject {
 	double x, y;
 	double width, height;
-	int type;       // 1=Spike
+	int type;       // 0=Spike
 	int state;      // 0=Normal, 1=Triggered/Falling
 	bool isVisible;
 	bool willKill;
+	bool willMove;
+	int speed;
+	int mode;	//0=move in x-axis, 1=move in y-axis
+	int trigX, trigY;
+	int innitialX, innitialY;
+	int finX, finY;
+	
 };
+
 
 
 // 3. Global Game State

@@ -2,14 +2,14 @@
 #include "GameData.h"
 #include "Physics.h"
 #include "Images.h"
-#include "Levelone.h"
+#include "Level.h"
 #include <mmsystem.h>
 #include <string>
 #include <time.h>
 #pragma comment(lib, "winmm.lib")
 
 //int gameState = 0;
-bool vol = true;
+bool vol = false;
 
 
 char inputName[50] = "";
@@ -107,7 +107,9 @@ void iDraw()
 
 		//Trap loop
 		for (int i = 0; i < noOfObj; i++) {
-			iShowImage(obj[i].x, obj[i].y, obj[i].width, obj[i].height, objImg[obj[i].type]);
+			if (obj[i].isVisible) {
+				iShowImage(obj[i].x, obj[i].y, obj[i].width, obj[i].height, objImg[obj[i].type]);
+			}
 		}
 		iShowImage(hero.x, hero.y, 50, 50, currentImage);
 
@@ -296,6 +298,11 @@ double interval = 1.5;
 void fixedUpdate()
 {
 	if (currentGameState == STATE_GAMEPLAY) {
+		
+
+		for (int i = 0; i < noOfObj; i++) {
+			triggerTrap(obj[i], hero, obj[i].trigX, obj[i].finX, obj[i].speed, obj[i].mode);
+		}
 
 		colisionDeal(hero);
 
@@ -415,6 +422,10 @@ void fixedUpdate()
 		hero.x = 0;
 		hero.y = obstacleHeight;
 		imageLoop = 0;
+		for (int i = 0; i < noOfObj; i++) {
+			obj[i].x = obj[i].innitialX;
+			obj[i].y = obj[i].innitialY;
+		}
 	}
 	
 
@@ -494,6 +505,7 @@ int main()
 	glutKeyboardFunc(myKeyboard);
 
 	initImages();
+	levelDefining();
 
 	iStart();
 	return 0;

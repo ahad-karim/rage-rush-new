@@ -1,7 +1,7 @@
 #ifndef PHYSICS_H
 #define PHYSICS_H
 #include "GameData.h"
-#include "Levelone.h"
+#include "Level.h"
 
 bool jumpDone = false;
 bool jumpStart = false;
@@ -121,9 +121,9 @@ void colisionDeal(Player &hero) {
 		onObj = false;
 	}
 
-	printf("Obstacle Height: %d ", obstacleHeight);
+	//printf("Obstacle Height: %d ", obstacleHeight);
 	if (!onObj) {
-		printf("Not on obj\n");
+		//printf("Not on obj\n");
 	}
 
 	
@@ -132,10 +132,33 @@ void colisionDeal(Player &hero) {
 	}
 	else if (!onObj && obstacleHeight == objHeightWithBase) {
 		obstacleHeight -= objHeight;
-		printf("Trigered\n");
+		//printf("Trigered\n");
 		
 	}
 	
+}
+
+
+
+
+// mode: 0 for X-axis movement, 1 for Y-axis movement
+void triggerTrap(GameObject &trap, Player &hero, double triggerX, double targetPos, double speed, int mode) {
+
+	// Check if the hero has passed the trigger line
+	if (hero.x > triggerX) {
+
+		// Pointer to the coordinate we want to change
+		double* currentPos = (mode == 0) ? &trap.x : &trap.y;
+
+		if (*currentPos < targetPos) {
+			*currentPos += speed;
+			if (*currentPos > targetPos) *currentPos = targetPos;
+		}
+		else if (*currentPos > targetPos) {
+			*currentPos -= speed;
+			if (*currentPos < targetPos) *currentPos = targetPos;
+		}
+	}
 }
 #endif
 
