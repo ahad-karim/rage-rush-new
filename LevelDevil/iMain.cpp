@@ -296,6 +296,7 @@ double interval = 1.5;
 void fixedUpdate()
 {
 	if (currentGameState == STATE_GAMEPLAY) {
+
 		colisionDeal(hero);
 
 		

@@ -1,18 +1,18 @@
-﻿Build started 2/13/2026 10:46:28 PM.
-     1>Project "C:\Users\User\Desktop\Whatever\rage-rush-new\LevelDevil\LevelDevil.vcxproj" on node 2 (Build target(s)).
+﻿Build started 2/14/2026 3:05:31 PM.
+     1>Project "C:\Users\T H I N K P A D\Documents\Visual Studio 2013\Projects\LevelDevil\LevelDevil\LevelDevil.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt iMain.cpp
          iMain.cpp
        Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\User\Desktop\Whatever\rage-rush-new\Debug\LevelDevil.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\User\Desktop\Whatever\rage-rush-new\Debug\LevelDevil.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\User\Desktop\Whatever\rage-rush-new\Debug\LevelDevil.lib" /MACHINE:X86 Debug\iMain.obj
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\T H I N K P A D\Documents\Visual Studio 2013\Projects\LevelDevil\Debug\LevelDevil.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\T H I N K P A D\Documents\Visual Studio 2013\Projects\LevelDevil\Debug\LevelDevil.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\T H I N K P A D\Documents\Visual Studio 2013\Projects\LevelDevil\Debug\LevelDevil.lib" /MACHINE:X86 Debug\iMain.obj
          Glaux.lib
          GLU32.LIB
          glui32.lib
          glut32.lib
          OPENGL32.LIB
-         LevelDevil.vcxproj -> C:\Users\User\Desktop\Whatever\rage-rush-new\Debug\LevelDevil.exe
-     1>Done Building Project "C:\Users\User\Desktop\Whatever\rage-rush-new\LevelDevil\LevelDevil.vcxproj" (Build target(s)).
+         LevelDevil.vcxproj -> C:\Users\T H I N K P A D\Documents\Visual Studio 2013\Projects\LevelDevil\Debug\LevelDevil.exe
+     1>Done Building Project "C:\Users\T H I N K P A D\Documents\Visual Studio 2013\Projects\LevelDevil\LevelDevil\LevelDevil.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.29
+Time Elapsed 00:00:01.11

@@ -5,6 +5,10 @@
 
 bool jumpDone = false;
 bool jumpStart = false;
+bool onObj = false;
+int objHeightWithBase = obstacleHeight;
+int objHeight;
+int curX, curY, curW, curH;
 
 // REUSABLE FUNCTION 1: Generic AABB Collision
 // Returns true if two rectangles overlap
@@ -43,16 +47,18 @@ void updatePlayerPhysics(Player &p, bool isLeft) {
 }
 
 
+
 void colisionDeal(Player &hero) {
-	bool onObj = false;
-	int objHeight = 0;
+	
 	for (int i = 0; i < noOfObj; i++) {
 		if (checkAABB(hero.x, hero.y, 50, 50, obj[i].x, obj[i].y, obj[i].width, obj[i].height)) {
+			
 			if (obj[i].willKill) {
 				hero.isDying = true;
 				break;
 			}
 
+			
 			if (hero.x + 45 > obj[i].x && hero.x + 5 < obj[i].x + obj[i].width) {
 				onObj = true;
 				objHeight = obj[i].height;
@@ -60,6 +66,7 @@ void colisionDeal(Player &hero) {
 			else {
 				onObj = false;
 			}
+			
 
 			// 1. TOP COLLISION (Landing)
 			// We add a horizontal check: the hero must be mostly over the platform to "land" on it.
@@ -70,12 +77,21 @@ void colisionDeal(Player &hero) {
 				hero.dy = 0;
 				//hero.isGrounded = true;
 				jumpDone = true;
+				onObj = true;
+				objHeightWithBase = obj[i].height + obstacleHeight;
+				objHeight = obj[i].height;
+				curX = obj[i].x;
+				curY = obj[i].y;
+				curW = obj[i].width;
+				curH = obj[i].height;
+
 
 
 			}
 			// 2. SIDE COLLISION
 			else
 			{
+				onObj = false;
 				// HITTING LEFT SIDE (Moving Right)
 				if (hero.dx > 0 && (hero.x + 50) > obj[i].x && (hero.x + 50) < obj[i].x + 20) {
 					hero.x = obj[i].x - 50;
@@ -88,19 +104,38 @@ void colisionDeal(Player &hero) {
 			}
 
 		}
+		
 
 
 
 	}
 
-	/*
-	if (onObj && objHeight != 0) {
-		obstacleHeight += objHeight;
+	if (checkAABB(hero.x, hero.y, 50, 50, curX, curY, curW, curH)) {
+		if (hero.dy <= 0 && (hero.y - hero.dy) >= (curY + curH - 5) &&
+			(hero.x + 45 > curX && hero.x + 5 < curX + curW))
+		{
+			onObj = true;
+		}
 	}
 	else {
-		obstacleHeight -= objHeight;
+		onObj = false;
 	}
-	*/
+
+	printf("Obstacle Height: %d ", obstacleHeight);
+	if (!onObj) {
+		printf("Not on obj\n");
+	}
+
+	
+	if (onObj) {
+		obstacleHeight = objHeightWithBase;
+	}
+	else if (!onObj && obstacleHeight == objHeightWithBase) {
+		obstacleHeight -= objHeight;
+		printf("Trigered\n");
+		
+	}
+	
 }
 #endif
 
