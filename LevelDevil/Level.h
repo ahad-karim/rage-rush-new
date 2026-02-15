@@ -8,8 +8,13 @@ int noOfObj;
 int obstacleHeight;
 int *subLevelCount;
 GameObject obj[50];
+bool levelDone = false;
 
 void levelDefining() {
+	if (levelDone == true) {
+		levelCount++;
+		levelDone = false;
+	}
 	if (levelCount == 1) {
 		subLevelDefining1();
 		subLevelCount = &subLevelCount1;
@@ -20,7 +25,7 @@ void levelDefining() {
 		}
 	}
 	else if (levelCount == 2) {
-
+		currentGameState = STATE_WIN;
 	}
 	printf("Trigered\n");
 }

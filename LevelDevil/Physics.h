@@ -10,7 +10,7 @@ int objHeightWithBase = obstacleHeight;
 int objHeight;
 int curX, curY, curW, curH;
 
-// REUSABLE FUNCTION 1: Generic AABB Collision
+
 // Returns true if two rectangles overlap
 bool checkAABB(double x1, double y1, double w1, double h1,
 	double x2, double y2, double w2, double h2) {
@@ -18,9 +18,7 @@ bool checkAABB(double x1, double y1, double w1, double h1,
 		y1 < y2 + h2 && y1 + h1 > y2);
 }
 
-// REUSABLE FUNCTION 2: Physics Update
-// Updates player and handles collisions with ANY level data
-//void updatePlayerPhysics(Player &p, Level &lvl) {
+//deals with jumping
 void updatePlayerPhysics(Player &p, bool isLeft) {
 	// 1. Apply Gravity
 	p.dy += gravity;
@@ -48,6 +46,7 @@ void updatePlayerPhysics(Player &p, bool isLeft) {
 
 
 
+//deals with colliding with objects
 void colisionDeal(Player &hero) {
 	
 	for (int i = 0; i < noOfObj; i++) {
@@ -55,6 +54,11 @@ void colisionDeal(Player &hero) {
 			
 			if (obj[i].willKill) {
 				hero.isDying = true;
+				break;
+			}
+
+			if (obj[i].type == 1) {
+				levelDone = true;
 				break;
 			}
 
@@ -69,7 +73,6 @@ void colisionDeal(Player &hero) {
 			
 
 			// 1. TOP COLLISION (Landing)
-			// We add a horizontal check: the hero must be mostly over the platform to "land" on it.
 			if (hero.dy <= 0 && (hero.y - hero.dy) >= (obj[i].y + obj[i].height - 5) &&
 				(hero.x + 45 > obj[i].x && hero.x + 5 < obj[i].x + obj[i].width))
 			{
@@ -97,7 +100,6 @@ void colisionDeal(Player &hero) {
 					hero.x = obj[i].x - 50;
 				}
 				// HITTING RIGHT SIDE (Moving Left)
-				// Fix: Check if hero's left edge is entering the object's right edge
 				else if (hero.dx > 0 && hero.x < (obj[i].x + obj[i].width) && hero.x >(obj[i].x + obj[i].width - 20)) {
 					hero.x = obj[i].x + obj[i].width;
 				}
@@ -142,6 +144,7 @@ void colisionDeal(Player &hero) {
 
 
 // mode: 0 for X-axis movement, 1 for Y-axis movement
+//trap moving
 void triggerTrap(GameObject &trap, Player &hero, double triggerX, double targetPos, double speed, int mode) {
 
 	// Check if the hero has passed the trigger line

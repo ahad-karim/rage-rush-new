@@ -9,14 +9,14 @@
 #pragma comment(lib, "winmm.lib")
 
 //int gameState = 0;
-bool vol = false;
+bool vol = true;
 
 
 char inputName[50] = "";
 int nameIndex = 0;
 int imageLoop = 0;
 bool isLeft = false;
-int doi = 12;
+int doi = 545;
 
 //Do not remove this line!!!!!!
 GameState currentGameState = STATE_MAIN_MENU;
@@ -101,7 +101,7 @@ void iDraw()
 		iSetColor(255, 255, 255);
 		// "Level 1" at top center
 		// Note: GLUT_BITMAP_TIMES_ROMAN_24 is the largest standard font.
-		iText(490, 550, "Level 1", GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(490, 550, "SPIKES", GLUT_BITMAP_HELVETICA_18);
 		for (int i = 0; i < 20; i++) {
 			iShowImage(i * 100, 0, 100, 20, brick1);
 			iShowImage(i * 100-25, 20, 100, 20, brick1);
@@ -119,6 +119,9 @@ void iDraw()
 		if (hero.isDead) {
 			iText(470, 250, "Game Over", GLUT_BITMAP_TIMES_ROMAN_24);
 		}
+	}
+	else if (currentGameState == STATE_WIN) {
+		iShowImage(0, 0, 1080, 600, win);
 	}
 
 }
@@ -249,9 +252,31 @@ void iMouse(int button, int state, int mx, int my)
 
 				nameIndex = 0;
 				inputName[0] = '\0';
+				hero.isDead = false;
+				hero.isDying = false;
+				currentImage = staticChar;
+				hero.x = 0;
+				hero.y = obstacleHeight;
+				imageLoop = 0;
+				levelDone = false;
+				levelCount = 1;
 
-				// Logic for "Registering new player"
-				//printf("New Player Registered. Loading Level 1...\n");
+				//Need to be changed for level 2
+				subLevelCount1 = 1;
+				levelDefining();
+
+				for (int i = 0; i < noOfObj; i++) {
+					obj[i].x = obj[i].innitialX;
+					obj[i].y = obj[i].innitialY;
+				}
+
+				
+
+			}
+
+			//Continue button
+			if (mx >= 285 && mx <= 500 && my >= 255 && my <= 320) {
+				currentGameState = STATE_GAMEPLAY;
 			}
 
 			//changing volume
@@ -278,6 +303,9 @@ void iMouse(int button, int state, int mx, int my)
 		}
 		else if (currentGameState == STATE_GAMEPLAY) {
 			//Temporary
+			currentGameState = STATE_MAIN_MENU;
+		}
+		else if (currentGameState == STATE_WIN) {
 			currentGameState = STATE_MAIN_MENU;
 		}
 		
@@ -309,6 +337,26 @@ void fixedUpdate()
 		colisionDeal(hero);
 
 		
+	}
+
+	if (currentGameState == STATE_WIN) {
+		hero.isDead = false;
+		hero.isDying = false;
+		currentImage = staticChar;
+		hero.x = 0;
+		hero.y = obstacleHeight;
+		imageLoop = 0;
+		levelDone = false;
+		levelCount = 1;
+
+		//Need to be changed for level 2
+		subLevelCount1 = 1;
+		levelDefining();
+
+		for (int i = 0; i < noOfObj; i++) {
+			obj[i].x = obj[i].innitialX;
+			obj[i].y = obj[i].innitialY;
+		}
 	}
 	
 	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))
@@ -356,6 +404,8 @@ void fixedUpdate()
 	}
 	if (isKeyPressed('s') || isSpecialKeyPressed(GLUT_KEY_DOWN))
 	{
+		//For debugging only
+		/*
 		if (imageLoop == 14) {
 			imageLoop = 14;
 			hero.isDead = true;
@@ -366,6 +416,7 @@ void fixedUpdate()
 		hero.isDying = true;
 
 		currentImage = characterDieArray[imageLoop];
+		*/
 	}
 	if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT))
 	{
@@ -411,12 +462,8 @@ void fixedUpdate()
 	}
 
 	if (isKeyPressed(' ')) {
-		// Playing the audio once
-		//mciSendString("play ggsong from 0", NULL, 0, NULL);
-		//currentImage = iLoadImage("Images//character/static.png");
 		vol = false;
 		
-			// If the use of an audio is finished, close it to free memory
 			mciSendString("stop bgsong", NULL, 0, NULL);
 	}
 	bool isMoving = (isKeyPressed('a') || isKeyPressed('d') ||

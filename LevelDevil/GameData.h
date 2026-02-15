@@ -18,7 +18,8 @@ enum GameState {
 	STATE_ENTER_NAME,   // 1
 	STATE_CONTINUE,     // 2
 	STATE_SCOREBOARD,   // 3
-	STATE_GAMEPLAY// 4
+	STATE_GAMEPLAY,// 4
+	STATE_WIN
 };
 
 // This is the actual variable that tracks which state we are in
@@ -43,13 +44,12 @@ struct Player {
 
 // Physics Constants
 double gravity = -1;    // Pulls the player down every frame
-double jumpForce = 15.0;
 
 // 2. The Universal Object (for tiles, traps, goals)
 struct GameObject {
 	double x, y;
 	double width, height;
-	int type;       // 0=Spike
+	int type;       // 0=Spike, 1=door
 	int state;      // 0=Normal, 1=Triggered/Falling
 	bool isVisible;
 	bool willKill;
