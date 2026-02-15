@@ -299,7 +299,6 @@ void fixedUpdate()
 {
 	if (currentGameState == STATE_GAMEPLAY) {
 		
-
 		for (int i = 0; i < noOfObj; i++) {
 			triggerTrap(obj[i], hero, obj[i].trigX, obj[i].finX, obj[i].speed, obj[i].mode);
 		}
@@ -384,8 +383,27 @@ void fixedUpdate()
 		}
 
 		hero.x += hero.dx;
-		if (hero.x >= 1030) {
+		if (hero.x >= 1030 && *subLevelCount >= 4) {
 			hero.x = 1030;
+		}
+		else if (hero.x >= 1000) {
+				//*subLevelCount++;
+			if (subLevelCount1 < 4) {
+				subLevelCount1++;
+			}
+			else {
+				subLevelCount1 = 0;
+			}
+			
+				levelDefining();
+				hero.x = 0;
+				hero.isDead = false;
+				hero.isDying = false;
+				currentImage = staticChar;
+				
+				hero.y = obstacleHeight;
+				imageLoop = 0;
+
 		}
 	}
 

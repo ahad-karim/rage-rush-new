@@ -6,10 +6,13 @@
 
 int noOfObj;
 int obstacleHeight;
+int *subLevelCount;
 GameObject obj[50];
 
 void levelDefining() {
 	if (levelCount == 1) {
+		subLevelDefining1();
+		subLevelCount = &subLevelCount1;
 		noOfObj = noOfObjLevel1;
 		obstacleHeight = obstacleHeightLevel1;
 		for (int i = 0; i < noOfObj; i++) {
@@ -19,6 +22,7 @@ void levelDefining() {
 	else if (levelCount == 2) {
 
 	}
+	printf("Trigered\n");
 }
 
 	
