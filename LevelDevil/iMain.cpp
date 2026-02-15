@@ -90,7 +90,10 @@ void iDraw()
 
 		iSetColor(180, 110, 80); // Background Brown
 		//iFilledRectangle(0, 0, 1080, 600);
-		iShowImage(0, 0, 1080, 600, sublevel1bg);
+
+			//Need to be edited for level 2
+			iShowImage(0, 0, 1080, 600, sublevelbgArray[subLevelCount1-1]);
+		
 
 		iSetColor(120, 70, 50); // A slightly different brown for the UI box
 
@@ -392,7 +395,7 @@ void fixedUpdate()
 				subLevelCount1++;
 			}
 			else {
-				subLevelCount1 = 0;
+				subLevelCount1 = 1;
 			}
 			
 				levelDefining();

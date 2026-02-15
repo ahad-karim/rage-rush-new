@@ -1,7 +1,7 @@
 #ifndef IMAGES_H
 #define IMAGES_H
 
-int logo, newgamebut, continuebut, volon, voloff, scores, levelbut, background1, menubg, sublevel1bg;
+int logo, newgamebut, continuebut, volon, voloff, scores, levelbut, background1, menubg, sublevel1bg, sublevel2bg, sublevel3bg, sublevel4bg;
 int rightmove1, rightmove2, rightmove3, currentImage;
 int leftmove1, leftmove2, leftmove3;
 int leftjump1, leftjump2, leftjump3, leftjump4, leftjump5;
@@ -14,6 +14,7 @@ int staticChar;
 int platform, base, brick1, spikes1;
 
 int objImg[] = { spikes1 };
+int sublevelbgArray[4];
 
 
 void initImages() {
@@ -37,6 +38,9 @@ void initImages() {
 	spikes1 = iLoadImage("Images//spikes1.png");
 	menubg = iLoadImage("Images//menubg.png");
 	sublevel1bg = iLoadImage("Images//sublevel1bg.png");
+	sublevel2bg = iLoadImage("Images//sublevel2bg.png");
+	sublevel3bg = iLoadImage("Images//sublevel3bg.png");
+	sublevel4bg = iLoadImage("Images//sublevel4bg.png");
 
 	int idx = 0;
 	for (int i = 0; i < 3; i++) {
@@ -105,6 +109,10 @@ void initImages() {
 	}
 
 	objImg[0] = iLoadImage("Images//spikes1.png");
+	sublevelbgArray[0] = sublevel1bg;
+	sublevelbgArray[1] = sublevel2bg;
+	sublevelbgArray[2] = sublevel3bg;
+	sublevelbgArray[3] = sublevel4bg;
 
 }
 
