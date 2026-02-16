@@ -50,7 +50,7 @@ void updatePlayerPhysics(Player &p, bool isLeft) {
 void colisionDeal(Player &hero) {
 	
 	for (int i = 0; i < noOfObj; i++) {
-		if (checkAABB(hero.x, hero.y, 50, 50, obj[i].x, obj[i].y, obj[i].width, obj[i].height)) {
+		if (checkAABB(hero.x, hero.y, 40, 50, obj[i].x, obj[i].y, obj[i].width, obj[i].height)) {
 			
 			if (obj[i].willKill) {
 				hero.isDying = true;
