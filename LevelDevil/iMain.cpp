@@ -359,7 +359,7 @@ void fixedUpdate()
 		}
 	}
 	
-	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))
+	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' '))
 	{
 		jumpStart = true;
 		
@@ -389,7 +389,7 @@ void fixedUpdate()
 		else {
 			imageLoop++;
 		}
-		if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP)) {
+		if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' ')) {
 				currentImage = characterLeftJumpArray[5];
 			
 		}
@@ -428,7 +428,7 @@ void fixedUpdate()
 			imageLoop++;
 		}
 
-		if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP)) {
+		if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' ')) {
 			currentImage = rightjump3;
 
 		}
@@ -464,10 +464,11 @@ void fixedUpdate()
 	if (isKeyPressed(' ')) {
 		vol = false;
 		
+		
 			mciSendString("stop bgsong", NULL, 0, NULL);
 	}
 	bool isMoving = (isKeyPressed('a') || isKeyPressed('d') ||
-		isSpecialKeyPressed(GLUT_KEY_LEFT) || isSpecialKeyPressed(GLUT_KEY_RIGHT) || isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP));
+		isSpecialKeyPressed(GLUT_KEY_LEFT) || isSpecialKeyPressed(GLUT_KEY_RIGHT) || isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' '));
 
 
 	if (hero.isDying) {
@@ -504,7 +505,7 @@ void fixedUpdate()
 			
 		}
 
-		if (!hero.isGrounded && !(isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP))) {
+		if (!hero.isGrounded && !(isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' '))) {
 			hero.dy += gravity;
 			hero.y += hero.dy;
 		}
