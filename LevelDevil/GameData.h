@@ -19,7 +19,8 @@ enum GameState {
 	STATE_CONTINUE,     // 2
 	STATE_SCOREBOARD,   // 3
 	STATE_GAMEPLAY,// 4
-	STATE_WIN
+	STATE_WIN,
+	STATE_GAME_OVER
 };
 
 // This is the actual variable that tracks which state we are in

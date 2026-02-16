@@ -1,7 +1,7 @@
 #ifndef IMAGES_H
 #define IMAGES_H
 
-int logo, newgamebut, continuebut, volon, voloff, scores, levelbut, background1, menubg, sublevel1bg, sublevel2bg, sublevel3bg, sublevel4bg, win;
+int logo, newgamebut, continuebut, volon, voloff, scores, levelbut, background1, menubg, sublevel1bg, sublevel2bg, sublevel3bg, sublevel4bg, win, gameover;
 int rightmove1, rightmove2, rightmove3, currentImage;
 int leftmove1, leftmove2, leftmove3;
 int leftjump1, leftjump2, leftjump3, leftjump4, leftjump5;
@@ -43,6 +43,7 @@ void initImages() {
 	sublevel4bg = iLoadImage("Images//sublevel4bg.png");
 	door = iLoadImage("Images//door.png");
 	win = iLoadImage("Images//win.png");
+	gameover = iLoadImage("Images//gameover.jpg");
 
 	int idx = 0;
 	for (int i = 0; i < 3; i++) {

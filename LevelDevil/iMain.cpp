@@ -123,6 +123,9 @@ void iDraw()
 	else if (currentGameState == STATE_WIN) {
 		iShowImage(0, 0, 1080, 600, win);
 	}
+	else if (currentGameState == STATE_GAME_OVER) {
+		iShowImage(0, 0, 1080, 600, gameover);
+	}
 
 }
 
@@ -308,6 +311,9 @@ void iMouse(int button, int state, int mx, int my)
 		else if (currentGameState == STATE_WIN) {
 			currentGameState = STATE_MAIN_MENU;
 		}
+		else if (currentGameState == STATE_GAME_OVER) {
+			currentGameState = STATE_MAIN_MENU;
+		}
 		
 	}
 	
@@ -484,7 +490,7 @@ void fixedUpdate()
 	}
 
 	if (hero.isDead) {
-		currentGameState = STATE_MAIN_MENU;
+		currentGameState = STATE_GAME_OVER;
 		hero.isDead = false;
 		hero.isDying = false;
 		currentImage = staticChar;
