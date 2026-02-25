@@ -1,587 +1,506 @@
 #include "iGraphics.h"
 #include "GameData.h"
-#include "Physics.h"
 #include "Images.h"
 #include "Level.h"
+#include "Physics.h"
+
 #include <mmsystem.h>
 #include <string>
 #include <time.h>
+
 #pragma comment(lib, "winmm.lib")
 
-//int gameState = 0;
+// int gameState = 0;
 bool vol = true;
-
 
 char inputName[50] = "";
 int nameIndex = 0;
 int imageLoop = 0;
 bool isLeft = false;
 int doi = 545;
+int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
+int screenHeight = glutGet(GLUT_SCREEN_HEIGHT) - 70;
 
-//Do not remove this line!!!!!!
+// Do not remove this line!!!!!!
 GameState currentGameState = STATE_MAIN_MENU;
-Player hero = { 0, obstacleHeight, 5, 15, false, false, 50, 80, false };
+Player hero = {0, obstacleHeight, 5, 15, false, false, 50, 80, false};
 
+void iDraw() {
+  iClear();
+  double rw = screenWidth / 1080.0;
+  double rh = screenHeight / 600.0;
 
+  if (currentGameState == STATE_MAIN_MENU) {
+    // Background scales to full screen
+    iShowImage(0, 0, screenWidth, screenHeight, menubg);
 
-void iDraw()
-{
-	iClear();
+    // Logo: Original(390, 325) Size(300, 300)
+    iShowImage(390 * rw, 325 * rh, 300 * rw, 300 * rh, logo);
 
-	if (currentGameState == STATE_MAIN_MENU) {
-		// --- DRAW MAIN MENU ---
-		//iSetColor(30, 30, 30); // Background Brown
-		//iFilledRectangle(0, 0, 1080, 600);
-		iShowImage(0, 0, 1080, 600, menubg);
+    // Continue: Original(285, 255) Size(215, 65)
+    iShowImage(285 * rw, 255 * rh, 215 * rw, 65 * rh, continuebut);
 
-		iSetColor(255, 255, 255); // White for boxes
+    // New Game: Original(580, 250) Size(240, 80)
+    iShowImage(580 * rw, 250 * rh, 240 * rw, 80 * rh, newgamebut);
 
-		// Logo (Top Center)
-		//iRectangle(390, 450, 300, 160);
-		//iText(520, 525, "Logo");
-		//iShowBMP(390, 450, "logo1.bmp");
-		iShowImage(390, 325, 300, 300, logo);
+    // Volume Button
+    if (vol)
+      iShowImage(0, 0, 70 * rw, 70 * rh, volon);
+    else
+      iShowImage(0, 0, 70 * rw, 70 * rh, voloff);
 
-		// Name Box (Middle)
-		//iRectangle(390, 375, 300, 70);
-		//iText(520, 405, "RageRush");
+    // Scores & Levels
+    iShowImage(440 * rw, 165 * rh, 180 * rw, 95 * rh, scores);
+    iShowImage(440 * rw, 90 * rh, 180 * rw, 95 * rh, levelbut);
+  }
 
-		// "Con" Button (Bottom Left)
-		//iRectangle(215, 250, 240, 80);
-		//iText(320, 285, "Continue");
-		iShowImage(285, 255, 215, 65, continuebut);
+  else if (currentGameState == STATE_GAMEPLAY) {
+    // Draw the moving background
+    iShowImage(0, 0, screenWidth, screenHeight,
+               sublevelbgArray[subLevelCount1 - 1]);
 
-		// "New Game" Button (Bottom Right)
-		//iRectangle(550, 250, 240, 80);
-		//iText(620, 285, "New Game");
-		iShowImage(580, 250, 240, 80, newgamebut);
+    // Draw Spikes Text (Centered)
+    iText(490 * rw, 550 * rh, "SPIKES", GLUT_BITMAP_HELVETICA_18);
 
-		//score button
-		iShowImage(440, 165, 180, 95, scores);
+    // Floor Bricks - Use a loop that fills the screen width dynamically
+    for (int x = 0; x < screenWidth; x += 100 * rw) {
+      iShowImage(x, 0, 100 * rw, 20 * rh, brick1);
+      iShowImage(x - (25 * rw), 20 * rh, 100 * rw, 20 * rh, brick1);
+      iShowImage(x, 40 * rh, 100 * rw, 20 * rh, brick1);
+    }
 
-		//levels button
-		iShowImage(440, 90, 180, 95, levelbut);
+    // Traps: These already have x/y coordinates.
+    // IMPORTANT: When loading levels, multiply their initial x/y by rw/rh!
+    for (int i = 0; i < noOfObj; i++) {
+      if (obj[i].isVisible) {
+        iShowImage(obj[i].x * rw, obj[i].y * rh, obj[i].width * rw,
+                   obj[i].height * rh, objImg[obj[i].type]);
+      }
+    }
 
-		if (vol) {
-			iShowImage(0, 0, 70, 70, volon);
-		}
-		else {
-			iShowImage(0, -1, 70, 70, voloff);
-		}
-	}
-	else if (currentGameState == STATE_ENTER_NAME) {
-		// Brown Background
-		iSetColor(180, 110, 80);
-		iFilledRectangle(0, 0, 1080, 600);
+    // Hero: Standard 50x50 scaled
+    iShowImage(hero.x * rw, hero.y * rh, 50 * rw, 50 * rh, currentImage);
 
-		iSetColor(255, 255, 255);
-		iText(420, 400, "ENTER YOUR NAME:", GLUT_BITMAP_HELVETICA_18);
+    if (hero.isDead) {
+      iText(470 * rw, 250 * rh, "Game Over", GLUT_BITMAP_TIMES_ROMAN_24);
+    }
+  }
 
-		// Input Box
-		iRectangle(390, 340, 300, 50);
-
-		// Render the string we are building
-		iText(405, 360, inputName, GLUT_BITMAP_TIMES_ROMAN_24);
-	}
-	else if (currentGameState == STATE_GAMEPLAY) {
-		// Brown rectangular box of size 1080 * 200 (at the top)
-		iFilledRectangle(0, 400, 1080, 200);
-		// --- DRAW LEVEL 1 PAGE ---
-
-		iSetColor(180, 110, 80); // Background Brown
-		//iFilledRectangle(0, 0, 1080, 600);
-
-			//Need to be edited for level 2
-			iShowImage(0, 0, 1080, 600, sublevelbgArray[subLevelCount1-1]);
-		
-
-		iSetColor(120, 70, 50); // A slightly different brown for the UI box
-
-
-		iSetColor(255, 255, 255);
-		// "Level 1" at top center
-		// Note: GLUT_BITMAP_TIMES_ROMAN_24 is the largest standard font.
-		iText(490, 550, "SPIKES", GLUT_BITMAP_HELVETICA_18);
-		for (int i = 0; i < 20; i++) {
-			iShowImage(i * 100, 0, 100, 20, brick1);
-			iShowImage(i * 100-25, 20, 100, 20, brick1);
-			iShowImage(i * 100, 40, 100, 20, brick1);
-		}
-
-		//Trap loop
-		for (int i = 0; i < noOfObj; i++) {
-			if (obj[i].isVisible) {
-				iShowImage(obj[i].x, obj[i].y, obj[i].width, obj[i].height, objImg[obj[i].type]);
-			}
-		}
-		iShowImage(hero.x, hero.y, 50, 50, currentImage);
-
-		if (hero.isDead) {
-			iText(470, 250, "Game Over", GLUT_BITMAP_TIMES_ROMAN_24);
-		}
-	}
-	else if (currentGameState == STATE_WIN) {
-		iShowImage(0, 0, 1080, 600, win);
-	}
-	else if (currentGameState == STATE_GAME_OVER) {
-		iShowImage(0, 0, 1080, 600, gameover);
-	}
-
+  // ... Repeat for WIN and GAME_OVER states ...
+  else if (currentGameState == STATE_WIN) {
+    iShowImage(0, 0, screenWidth, screenHeight, win);
+  }
+  else if (currentGameState == STATE_GAME_OVER) {
+	  iShowImage(0, 0, screenWidth, screenHeight, gameover);
+  }
 }
 
-
-//New stuff start
+// New stuff start
 
 void saveGameData() {
-	FILE *fp;
-	// fopen_s returns 0 if successful
-	errno_t err = fopen_s(&fp, "savegame.txt", "w");
+  FILE *fp;
+  // fopen_s returns 0 if successful
+  errno_t err = fopen_s(&fp, "savegame.txt", "w");
 
-	if (err != 0 || fp == NULL) return;
+  if (err != 0 || fp == NULL)
+    return;
 
-	for (int i = 0; i < totalPlayers; i++) {
-		fprintf(fp, "%s %d %d\n", allPlayers[i].name, allPlayers[i].level, allPlayers[i].deaths);
-	}
-	fclose(fp);
+  for (int i = 0; i < totalPlayers; i++) {
+    fprintf(fp, "%s %d %d\n", allPlayers[i].name, allPlayers[i].level,
+            allPlayers[i].deaths);
+  }
+  fclose(fp);
 }
 
 void loadGameData() {
-	FILE *fp;
-	errno_t err = fopen_s(&fp, "savegame.txt", "r");
+  FILE *fp;
+  errno_t err = fopen_s(&fp, "savegame.txt", "r");
 
-	if (err != 0 || fp == NULL) return;
+  if (err != 0 || fp == NULL)
+    return;
 
-	totalPlayers = 0;
-	// Check if totalPlayers is within bounds of your array (e.g., 100)
-	while (totalPlayers < 100 && fscanf_s(fp, "%s %d %d", allPlayers[totalPlayers].name, (unsigned)_countof(allPlayers[totalPlayers].name),
-		&allPlayers[totalPlayers].level, &allPlayers[totalPlayers].deaths) != EOF) {
-		totalPlayers++;
-	}
-	fclose(fp);
+  totalPlayers = 0;
+  // Check if totalPlayers is within bounds of your array (e.g., 100)
+  while (totalPlayers < 100 &&
+         fscanf_s(fp, "%s %d %d", allPlayers[totalPlayers].name,
+                  (unsigned)_countof(allPlayers[totalPlayers].name),
+                  &allPlayers[totalPlayers].level,
+                  &allPlayers[totalPlayers].deaths) != EOF) {
+    totalPlayers++;
+  }
+  fclose(fp);
 }
 
-//New stuff end
+// New stuff end
 
+// New stuff
 
-//New stuff
+void registerNewPlayer(char *name) {
+  // 1. Check if we have space in our array (max 100 players)
+  if (totalPlayers >= 100) {
+    printf("Error: Player database full!\n");
+    return;
+  }
 
-void registerNewPlayer(char* name) {
-	// 1. Check if we have space in our array (max 100 players)
-	if (totalPlayers >= 100) {
-		printf("Error: Player database full!\n");
-		return;
-	}
+  // 2. Copy the name from the input buffer to our permanent player list
+  // We use strcpy_s for the safety Visual Studio requested earlier
+  strcpy_s(allPlayers[totalPlayers].name, sizeof(allPlayers[totalPlayers].name),
+           name);
 
-	// 2. Copy the name from the input buffer to our permanent player list
-	// We use strcpy_s for the safety Visual Studio requested earlier
-	strcpy_s(allPlayers[totalPlayers].name, sizeof(allPlayers[totalPlayers].name), name);
+  // 3. Set starting stats for a "New Game"
+  allPlayers[totalPlayers].level = 1;
+  allPlayers[totalPlayers].deaths = 0;
 
-	// 3. Set starting stats for a "New Game"
-	allPlayers[totalPlayers].level = 1;
-	allPlayers[totalPlayers].deaths = 0;
+  // 4. Set this new person as the active player
+  currentPlayerIndex = totalPlayers;
 
-	// 4. Set this new person as the active player
-	currentPlayerIndex = totalPlayers;
+  // 5. Increase the count of total registered players
+  totalPlayers++;
 
-	// 5. Increase the count of total registered players
-	totalPlayers++;
+  // 6. Save the updated list to "savegame.txt" immediately
+  // This ensures that even if the game crashes, the player is registered
+  saveGameData();
 
-	// 6. Save the updated list to "savegame.txt" immediately
-	// This ensures that even if the game crashes, the player is registered
-	saveGameData();
-
-	printf("Registered Player: %s at Index: %d\n", name, currentPlayerIndex);
+  printf("Registered Player: %s at Index: %d\n", name, currentPlayerIndex);
 }
 
 void myKeyboard(unsigned char key, int x, int y) {
-	if (currentGameState == STATE_ENTER_NAME) {
-		if (key == '\r') { // Enter key
-			if (nameIndex > 0) {
-				// Save and start game
-				registerNewPlayer(inputName);
-				currentGameState = STATE_GAMEPLAY;
+  if (currentGameState == STATE_ENTER_NAME) {
+    if (key == '\r') { // Enter key
+      if (nameIndex > 0) {
+        // Save and start game
+        registerNewPlayer(inputName);
+        currentGameState = STATE_GAMEPLAY;
 
-				// Clear for next time
-				nameIndex = 0;
-				inputName[0] = '\0';
-			}
-		}
-		else if (key == '\b') { // Backspace
-			if (nameIndex > 0) {
-				nameIndex--;
-				inputName[nameIndex] = '\0';
-			}
-		}
-		else if (key >= 32 && key <= 126) { // Printable characters
-			if (nameIndex < 49) {
-				inputName[nameIndex] = key;
-				nameIndex++;
-				inputName[nameIndex] = '\0';
-			}
-		}
-	}
+        // Clear for next time
+        nameIndex = 0;
+        inputName[0] = '\0';
+      }
+    } else if (key == '\b') { // Backspace
+      if (nameIndex > 0) {
+        nameIndex--;
+        inputName[nameIndex] = '\0';
+      }
+    } else if (key >= 32 && key <= 126) { // Printable characters
+      if (nameIndex < 49) {
+        inputName[nameIndex] = key;
+        nameIndex++;
+        inputName[nameIndex] = '\0';
+      }
+    }
+  }
 
-	// This tells the window to refresh after typing a letter
-	glutPostRedisplay();
+  // This tells the window to refresh after typing a letter
+  glutPostRedisplay();
 }
 
+// end of new stuff
 
+void iMouseMove(int mx, int my) {}
 
-//end of new stuff
+void iPassiveMouseMove(int mx, int my) {}
 
-void iMouseMove(int mx, int my)
-{
-	
-}
+void iMouse(int button, int state, int mx, int my) {
 
-void iPassiveMouseMove(int mx, int my)
-{
-	
-}
+  if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+    // Only check for clicks if we are currently on the menu
+    if (currentGameState == STATE_MAIN_MENU) {
 
-void iMouse(int button, int state, int mx, int my)
-{
-	
-	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
-	{
-		// Only check for clicks if we are currently on the menu
-		if (currentGameState == STATE_MAIN_MENU) {
-			
+      // New game button click
+      if (mx >= screenWidth * 0.509 && mx <= screenWidth * 0.731 &&
+          my >= screenHeight * 0.416 && my <= screenHeight * 0.55) {
+        // currentGameState = STATE_ENTER_NAME; // Naming state
+        currentGameState = STATE_GAMEPLAY;
 
-			//New game button click
-			if (mx >= 550 && mx <= 790 && my >= 250 && my <= 330) {
-				//currentGameState = STATE_ENTER_NAME; // Naming state
-				currentGameState = STATE_GAMEPLAY;
+        nameIndex = 0;
+        inputName[0] = '\0';
+        hero.isDead = false;
+        hero.isDying = false;
+        currentImage = staticChar;
+        hero.x = 0;
+        hero.y = obstacleHeight;
+        imageLoop = 0;
+        levelDone = false;
+        levelCount = 1;
 
-				nameIndex = 0;
-				inputName[0] = '\0';
-				hero.isDead = false;
-				hero.isDying = false;
-				currentImage = staticChar;
-				hero.x = 0;
-				hero.y = obstacleHeight;
-				imageLoop = 0;
-				levelDone = false;
-				levelCount = 1;
+        // Need to be changed for level 2
+        subLevelCount1 = 1;
+        levelDefining();
 
-				//Need to be changed for level 2
-				subLevelCount1 = 1;
-				levelDefining();
+        for (int i = 0; i < noOfObj; i++) {
+          obj[i].x = obj[i].innitialX;
+          obj[i].y = obj[i].innitialY;
+        }
+      }
 
-				for (int i = 0; i < noOfObj; i++) {
-					obj[i].x = obj[i].innitialX;
-					obj[i].y = obj[i].innitialY;
-				}
+      // Continue button
+      if (mx >= screenWidth * 0.263 && mx <= screenWidth * 0.462 &&
+          my >= screenHeight * 0.425 && my <= screenHeight * 0.533) {
+        currentGameState = STATE_GAMEPLAY;
+      }
 
-				
+      // changing volume
+      if (mx <= screenWidth * 0.065 && my <= screenHeight * 0.116) {
+        vol = !vol;
+        // Opening/Loading the audio files
+        mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0,
+                      NULL);
+        // mciSendString("open \"Audios//gameover.mp3\" alias ggsong", NULL, 0,
+        // NULL);
 
-			}
+        // mciSendString("close ggsong", NULL, 0, NULL);
+        if (vol) {
+          // Playing the background audio on repeat
+          mciSendString("play bgsong repeat", NULL, 0, NULL);
+        } else {
+          // If the use of an audio is finished, close it to free memory
+          mciSendString("stop bgsong", NULL, 0, NULL);
+        }
+      }
+    } else if (currentGameState == STATE_GAMEPLAY) {
+      // Temporary
+      currentGameState = STATE_MAIN_MENU;
+    } else if (currentGameState == STATE_WIN) {
+      currentGameState = STATE_MAIN_MENU;
+    } else if (currentGameState == STATE_GAME_OVER) {
+      currentGameState = STATE_MAIN_MENU;
+    }
+  }
 
-			//Continue button
-			if (mx >= 285 && mx <= 500 && my >= 255 && my <= 320) {
-				currentGameState = STATE_GAMEPLAY;
-			}
-
-			//changing volume
-			if (mx >= 0 && my >= 0 && mx <= 70 && my <= 70) {
-				vol = !vol;
-				// Opening/Loading the audio files
-				mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0, NULL);
-				//mciSendString("open \"Audios//gameover.mp3\" alias ggsong", NULL, 0, NULL);
-
-
-
-
-				// mciSendString("close ggsong", NULL, 0, NULL);
-				if (vol) {
-					// Playing the background audio on repeat
-					mciSendString("play bgsong repeat", NULL, 0, NULL);
-				}
-				else {
-					// If the use of an audio is finished, close it to free memory
-					mciSendString("stop bgsong", NULL, 0, NULL);
-				}
-				
-			}
-		}
-		else if (currentGameState == STATE_GAMEPLAY) {
-			//Temporary
-			currentGameState = STATE_MAIN_MENU;
-		}
-		else if (currentGameState == STATE_WIN) {
-			currentGameState = STATE_MAIN_MENU;
-		}
-		else if (currentGameState == STATE_GAME_OVER) {
-			currentGameState = STATE_MAIN_MENU;
-		}
-		
-	}
-	
-	
-	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
-	{
-		
-	}
+  if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+  }
 }
 
 // Special Keys:
-// GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6, GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11, GLUT_KEY_F12, 
-// GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN, GLUT_KEY_PAGE UP, GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END, GLUT_KEY_INSERT
-
+// GLUT_KEY_F1, GLUT_KEY_F2, GLUT_KEY_F3, GLUT_KEY_F4, GLUT_KEY_F5, GLUT_KEY_F6,
+// GLUT_KEY_F7, GLUT_KEY_F8, GLUT_KEY_F9, GLUT_KEY_F10, GLUT_KEY_F11,
+// GLUT_KEY_F12, GLUT_KEY_LEFT, GLUT_KEY_UP, GLUT_KEY_RIGHT, GLUT_KEY_DOWN,
+// GLUT_KEY_PAGE UP, GLUT_KEY_PAGE DOWN, GLUT_KEY_HOME, GLUT_KEY_END,
+// GLUT_KEY_INSERT
 
 bool wasMovingLastFrame = false;
 clock_t lastTime = 0;
 double interval = 1.5;
-void fixedUpdate()
-{
-	if (currentGameState == STATE_GAMEPLAY) {
-		
-		for (int i = 0; i < noOfObj; i++) {
-			triggerTrap(obj[i], hero, obj[i].trigX, obj[i].finX, obj[i].speed, obj[i].mode);
-		}
+void fixedUpdate() {
+  if (currentGameState == STATE_GAMEPLAY) {
 
-		colisionDeal(hero);
+    for (int i = 0; i < noOfObj; i++) {
+      triggerTrap(obj[i], hero, obj[i].trigX, obj[i].finX, obj[i].speed,
+                  obj[i].mode);
+    }
 
-		
-	}
+    colisionDeal(hero);
+  }
 
-	if (currentGameState == STATE_WIN) {
-		hero.isDead = false;
-		hero.isDying = false;
-		currentImage = staticChar;
-		hero.x = 0;
-		hero.y = obstacleHeight;
-		imageLoop = 0;
-		levelDone = false;
-		levelCount = 1;
+  if (currentGameState == STATE_WIN) {
+    hero.isDead = false;
+    hero.isDying = false;
+    currentImage = staticChar;
+    hero.x = 0;
+    hero.y = obstacleHeight;
+    imageLoop = 0;
+    levelDone = false;
+    levelCount = 1;
 
-		//Need to be changed for level 2
-		subLevelCount1 = 1;
-		levelDefining();
+    // Need to be changed for level 2
+    subLevelCount1 = 1;
+    levelDefining();
 
-		for (int i = 0; i < noOfObj; i++) {
-			obj[i].x = obj[i].innitialX;
-			obj[i].y = obj[i].innitialY;
-		}
-	}
-	
-	if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' '))
-	{
-		jumpStart = true;
-		
-		if (imageLoop == 9) {
-			imageLoop = 0;
-		}
-		else {
-			imageLoop++;
-		}
+    for (int i = 0; i < noOfObj; i++) {
+      obj[i].x = obj[i].innitialX;
+      obj[i].y = obj[i].innitialY;
+    }
+  }
 
-		if (isLeft) {
-			currentImage = characterLeftJumpArray[5];
-			updatePlayerPhysics(hero, isLeft);
-		}
-		else {
-			currentImage = rightjump3;
-			updatePlayerPhysics(hero, isLeft);
-		}
-	}
-	if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT))
-	{
-		isLeft = true;
-		
-		if (imageLoop == 8) {
-			imageLoop = 0;
-		}
-		else {
-			imageLoop++;
-		}
-		if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' ')) {
-				currentImage = characterLeftJumpArray[5];
-			
-		}
-		else {
-			currentImage = characterLeftArray[imageLoop];
-		}
-		
-		hero.x -= hero.dx;
-		if (hero.x <= 0) {
-			hero.x = 0;
-		}
-	}
-	if (isKeyPressed('s') || isSpecialKeyPressed(GLUT_KEY_DOWN))
-	{
-		//For debugging only
-		/*
-		if (imageLoop == 14) {
-			imageLoop = 14;
-			hero.isDead = true;
-		}
-		else {
-			imageLoop++;
-		}
-		hero.isDying = true;
+  if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) ||
+      isKeyPressed(' ')) {
+    jumpStart = true;
 
-		currentImage = characterDieArray[imageLoop];
-		*/
-	}
-	if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT))
-	{
-		isLeft = false;
-		if (imageLoop == 8) {
-			imageLoop = 0;
-		}
-		else {
-			imageLoop++;
-		}
+    if (imageLoop == 9) {
+      imageLoop = 0;
+    } else {
+      imageLoop++;
+    }
 
-		if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' ')) {
-			currentImage = rightjump3;
+    if (isLeft) {
+      currentImage = characterLeftJumpArray[5];
+      updatePlayerPhysics(hero, isLeft);
+    } else {
+      currentImage = rightjump3;
+      updatePlayerPhysics(hero, isLeft);
+    }
+  }
+  if (isKeyPressed('a') || isSpecialKeyPressed(GLUT_KEY_LEFT)) {
+    isLeft = true;
 
-		}
-		else {
-			currentImage = characterRightArray[imageLoop];
-		}
+    if (imageLoop == 8) {
+      imageLoop = 0;
+    } else {
+      imageLoop++;
+    }
+    if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) ||
+        isKeyPressed(' ')) {
+      currentImage = characterLeftJumpArray[5];
 
-		hero.x += hero.dx;
-		if (hero.x >= 1030 && *subLevelCount >= 4) {
-			hero.x = 1030;
-		}
-		else if (hero.x >= 1000) {
-				//*subLevelCount++;
-			if (subLevelCount1 < 4) {
-				subLevelCount1++;
-			}
-			else {
-				subLevelCount1 = 1;
-			}
-			
-				levelDefining();
-				hero.x = 0;
-				hero.isDead = false;
-				hero.isDying = false;
-				currentImage = staticChar;
-				
-				hero.y = obstacleHeight;
-				imageLoop = 0;
+    } else {
+      currentImage = characterLeftArray[imageLoop];
+    }
 
-		}
-	}
+    hero.x -= hero.dx;
+    if (hero.x <= 0) {
+      hero.x = 0;
+    }
+  }
+  if (isKeyPressed('s') || isSpecialKeyPressed(GLUT_KEY_DOWN)) {
+    // For debugging only
+    /*
+    if (imageLoop == 14) {
+            imageLoop = 14;
+            hero.isDead = true;
+    }
+    else {
+            imageLoop++;
+    }
+    hero.isDying = true;
 
-	if (isKeyPressed(' ')) {
-		vol = false;
-		
-		
-			mciSendString("stop bgsong", NULL, 0, NULL);
-	}
-	bool isMoving = (isKeyPressed('a') || isKeyPressed('d') ||
-		isSpecialKeyPressed(GLUT_KEY_LEFT) || isSpecialKeyPressed(GLUT_KEY_RIGHT) || isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' '));
+    currentImage = characterDieArray[imageLoop];
+    */
+  }
+  if (isKeyPressed('d') || isSpecialKeyPressed(GLUT_KEY_RIGHT)) {
+    isLeft = false;
+    if (imageLoop == 8) {
+      imageLoop = 0;
+    } else {
+      imageLoop++;
+    }
 
+    if (isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) ||
+        isKeyPressed(' ')) {
+      currentImage = rightjump3;
 
-	if (hero.isDying) {
-		if (imageLoop == 14) {
-			imageLoop = 14;
-			hero.isDead = true;
-		}
-		else {
-			imageLoop++;
-		}
+    } else {
+      currentImage = characterRightArray[imageLoop];
+    }
 
-		currentImage = characterDieArray[imageLoop];
-	}
+    hero.x += hero.dx;
+    if (hero.x >= 1030 && *subLevelCount >= 4) {
+      hero.x = 1030;
+    } else if (hero.x >= 1000) {
+      //*subLevelCount++;
+      if (subLevelCount1 < 4) {
+        subLevelCount1++;
+      } else {
+        subLevelCount1 = 1;
+      }
 
-	if (hero.isDead) {
-		currentGameState = STATE_GAME_OVER;
-		hero.isDead = false;
-		hero.isDying = false;
-		currentImage = staticChar;
-		hero.x = 0;
-		hero.y = obstacleHeight;
-		imageLoop = 0;
-		for (int i = 0; i < noOfObj; i++) {
-			obj[i].x = obj[i].innitialX;
-			obj[i].y = obj[i].innitialY;
-		}
-	}
-	
+      levelDefining();
+      hero.x = 0;
+      hero.isDead = false;
+      hero.isDying = false;
+      currentImage = staticChar;
 
-	if (hero.y > obstacleHeight || !hero.isGrounded) {
-		// Apply gravity gradually
-		if (hero.dy > obstacleHeight && !isMoving) {
-			hero.dy = 0;
-			
-		}
+      hero.y = obstacleHeight;
+      imageLoop = 0;
+    }
+  }
 
-		if (!hero.isGrounded && !(isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' '))) {
-			hero.dy += gravity;
-			hero.y += hero.dy;
-		}
-		
-		imageLoop = 0;
+  if (isKeyPressed(' ')) {
+    vol = false;
 
+    mciSendString("stop bgsong", NULL, 0, NULL);
+  }
+  bool isMoving = (isKeyPressed('a') || isKeyPressed('d') ||
+                   isSpecialKeyPressed(GLUT_KEY_LEFT) ||
+                   isSpecialKeyPressed(GLUT_KEY_RIGHT) || isKeyPressed('w') ||
+                   isSpecialKeyPressed(GLUT_KEY_UP) || isKeyPressed(' '));
 
-		// Ground Collision
-		if (hero.y <= obstacleHeight) {
-			hero.y = obstacleHeight;
-			hero.dy = 15; // Reset velocity
-			hero.isGrounded = true;
+  if (hero.isDying) {
+    if (imageLoop == 14) {
+      imageLoop = 14;
+      hero.isDead = true;
+    } else {
+      imageLoop++;
+    }
 
-			// Set landing image
-			currentImage = staticChar;
-			imageLoop = 0;
-		}
-	}
+    currentImage = characterDieArray[imageLoop];
+  }
 
-	if (wasMovingLastFrame && !isMoving && hero.y <= obstacleHeight) {
-		printf("Movement Stopped!\n");
-		currentImage = staticChar;
-		imageLoop = 0;
-		// We don't need a loop here anymore. 
-		// The physics block above will catch that hero.y > 0 and start the fall.
-	}
+  if (hero.isDead) {
+    currentGameState = STATE_GAME_OVER;
+    hero.isDead = false;
+    hero.isDying = false;
+    currentImage = staticChar;
+    hero.x = 0;
+    hero.y = obstacleHeight;
+    imageLoop = 0;
+    for (int i = 0; i < noOfObj; i++) {
+      obj[i].x = obj[i].innitialX;
+      obj[i].y = obj[i].innitialY;
+    }
+  }
 
+  // Use platform top as ground when on a platform, otherwise base floor
+  double groundLevel = onPlatform ? platformTopY : (double)obstacleHeight;
 
+  // 1. Detect walking off edges
+  if (hero.y > groundLevel + 1) { // Small buffer to avoid jitter
+    hero.isGrounded = false;
+  }
 
-	wasMovingLastFrame = isMoving;
+  // 2. Gravity and Falling Animation
+  if (!hero.isGrounded) {
+    if (!(isKeyPressed('w') || isSpecialKeyPressed(GLUT_KEY_UP) ||
+          isKeyPressed(' '))) {
+      hero.dy += gravity;
+      hero.y += hero.dy;
+    }
+    // Only reset animation if truly in air (prevents freeze on platforms)
+    imageLoop = 0;
+  }
+
+  // 3. Ground Landing
+  if (hero.y <= groundLevel + 0.1) {
+    hero.y = groundLevel;
+    hero.dy = 15; // Reset velocity for next jump
+
+    if (!hero.isGrounded) {
+      hero.isGrounded = true;
+      currentImage = staticChar;
+      imageLoop = 0;
+    }
+  }
+
+  if (wasMovingLastFrame && !isMoving && hero.y <= groundLevel) {
+    printf("Movement Stopped!\n");
+    currentImage = staticChar;
+    imageLoop = 0;
+  }
+
+  wasMovingLastFrame = isMoving;
 }
 
+int main() {
 
+  // Opening/Loading the audio files
+  mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0,
+                NULL);
+  // mciSendString("open \"Audios//gameover.mp3\" alias ggsong", NULL, 0, NULL);
 
+  // mciSendString("close ggsong", NULL, 0, NULL);
+  if (vol) {
+    // Playing the background audio on repeat
+    mciSendString("play bgsong repeat", NULL, 0, NULL);
+  } else {
+    // If the use of an audio is finished, close it to free memory
+    mciSendString("stop bgsong", NULL, 0, NULL);
+  }
+  iInitialize(screenWidth, screenHeight, "RageRush");
 
+  glutKeyboardFunc(myKeyboard);
 
+  initImages();
+  levelDefining();
 
-
-
-
-
-
-int main()
-{
-	
-	// Opening/Loading the audio files
-	mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0, NULL);
-	//mciSendString("open \"Audios//gameover.mp3\" alias ggsong", NULL, 0, NULL);
-
-
-
-
-	// mciSendString("close ggsong", NULL, 0, NULL);
-	if (vol) {
-		// Playing the background audio on repeat
-		mciSendString("play bgsong repeat", NULL, 0, NULL);
-	}
-	else {
-		// If the use of an audio is finished, close it to free memory
-		mciSendString("stop bgsong", NULL, 0, NULL);
-	}
-	iInitialize(1080, 600, "RageRush");
-
-	
-
-	glutKeyboardFunc(myKeyboard);
-
-	initImages();
-	levelDefining();
-
-	iStart();
-	return 0;
+  iStart();
+  return 0;
 }
