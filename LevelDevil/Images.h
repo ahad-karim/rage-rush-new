@@ -14,9 +14,9 @@ int characterLeftArray[9];
 int characterLeftJumpArray[10];
 int characterDieArray[15];
 int staticChar;
-int platform, base, brick1, spikes1, door;
+int platform, base, brick1, spikes1, door, sawblade;
 
-int objImg[3] = {spikes1, door, platform};
+int objImg[4] = {spikes1, door, platform, sawblade};
 int sublevelbgArray[4];
 
 void initImages() {
@@ -126,6 +126,7 @@ void initImages() {
   objImg[0] = iLoadImage("Images//spikes1.png");
   objImg[1] = iLoadImage("Images//door.png");
   objImg[2] = iLoadImage("Images//platform.png");
+  objImg[3] = iLoadImage("Images//sawblade1.png");
   sublevelbgArray[0] = sublevel1bg;
   sublevelbgArray[1] = sublevel2bg;
   sublevelbgArray[2] = sublevel3bg;

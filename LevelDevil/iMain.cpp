@@ -3,10 +3,10 @@
 #include "Images.h"
 #include "Level.h"
 #include "Physics.h"
-
 #include <mmsystem.h>
 #include <string>
 #include <time.h>
+
 
 #pragma comment(lib, "winmm.lib")
 
@@ -57,10 +57,13 @@ void iDraw() {
   else if (currentGameState == STATE_GAMEPLAY) {
     // Draw the moving background
     iShowImage(0, 0, screenWidth, screenHeight,
-               sublevelbgArray[subLevelCount1 - 1]);
+               sublevelbgArray[*subLevelCount - 1]);
 
-    // Draw Spikes Text (Centered)
-    iText(490 * rw, 550 * rh, "SPIKES", GLUT_BITMAP_HELVETICA_18);
+    // Draw Header Text (Centered)
+    if (levelCount == 1)
+      iText(490 * rw, 550 * rh, "SPIKES", GLUT_BITMAP_HELVETICA_18);
+    else if (levelCount == 2)
+      iText(480 * rw, 550 * rh, "SAWBLADES", GLUT_BITMAP_HELVETICA_18);
 
     // Floor Bricks - Use a loop that fills the screen width dynamically
     for (int x = 0; x < screenWidth; x += 100 * rw) {
@@ -89,9 +92,8 @@ void iDraw() {
   // ... Repeat for WIN and GAME_OVER states ...
   else if (currentGameState == STATE_WIN) {
     iShowImage(0, 0, screenWidth, screenHeight, win);
-  }
-  else if (currentGameState == STATE_GAME_OVER) {
-	  iShowImage(0, 0, screenWidth, screenHeight, gameover);
+  } else if (currentGameState == STATE_GAME_OVER) {
+    iShowImage(0, 0, screenWidth, screenHeight, gameover);
   }
 }
 
@@ -285,8 +287,7 @@ void fixedUpdate() {
   if (currentGameState == STATE_GAMEPLAY) {
 
     for (int i = 0; i < noOfObj; i++) {
-      triggerTrap(obj[i], hero, obj[i].trigX, obj[i].finX, obj[i].speed,
-                  obj[i].mode);
+      triggerTrap(obj[i], hero);
     }
 
     colisionDeal(hero);
@@ -387,10 +388,10 @@ void fixedUpdate() {
       hero.x = 1030;
     } else if (hero.x >= 1000) {
       //*subLevelCount++;
-      if (subLevelCount1 < 4) {
-        subLevelCount1++;
+      if (*subLevelCount < 4) {
+        (*subLevelCount)++;
       } else {
-        subLevelCount1 = 1;
+        (*subLevelCount) = 1;
       }
 
       levelDefining();

@@ -169,25 +169,36 @@ void colisionDeal(Player &hero) {
   }
 }
 
-// mode: 0 for X-axis movement, 1 for Y-axis movement
 // trap moving
-void triggerTrap(GameObject &trap, Player &hero, double triggerX,
-                 double targetPos, double speed, int mode) {
+void triggerTrap(GameObject &trap, Player &hero) {
+  if (!trap.willMove)
+    return;
 
   // Check if the hero has passed the trigger line
-  if (hero.x > triggerX) {
+  if (hero.x > trap.trigX) {
+    // 0 = X only, 1 = Y only, 2 = Both
+    if (trap.mode == 0 || trap.mode == 2) {
+      if (trap.x < trap.finX) {
+        trap.x += trap.speed;
+        if (trap.x > trap.finX)
+          trap.x = trap.finX;
+      } else if (trap.x > trap.finX) {
+        trap.x -= trap.speed;
+        if (trap.x < trap.finX)
+          trap.x = trap.finX;
+      }
+    }
 
-    // Pointer to the coordinate we want to change
-    double *currentPos = (mode == 0) ? &trap.x : &trap.y;
-
-    if (*currentPos < targetPos) {
-      *currentPos += speed;
-      if (*currentPos > targetPos)
-        *currentPos = targetPos;
-    } else if (*currentPos > targetPos) {
-      *currentPos -= speed;
-      if (*currentPos < targetPos)
-        *currentPos = targetPos;
+    if (trap.mode == 1 || trap.mode == 2) {
+      if (trap.y < trap.finY) {
+        trap.y += trap.speed;
+        if (trap.y > trap.finY)
+          trap.y = trap.finY;
+      } else if (trap.y > trap.finY) {
+        trap.y -= trap.speed;
+        if (trap.y < trap.finY)
+          trap.y = trap.finY;
+      }
     }
   }
 }

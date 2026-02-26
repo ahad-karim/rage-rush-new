@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-
 int levelCount = 1;
 
 struct PlayerData {
@@ -49,7 +48,7 @@ double gravity = -1; // Pulls the player down every frame
 struct GameObject {
   double x, y;
   double width, height;
-  int type;  // 0=Spike, 1=Door, 2=Platform (solid ground)
+  int type;  // 0=Spike, 1=Door, 2=Platform (solid ground), 3=Sawblade
   int state; // 0=Normal, 1=Triggered/Falling
   bool isVisible;
   bool willKill;
