@@ -1,12 +1,13 @@
 #include "iGraphics.h"
+
 #include "GameData.h"
 #include "Images.h"
 #include "Level.h"
 #include "Physics.h"
+
 #include <mmsystem.h>
 #include <string>
 #include <time.h>
-
 
 #pragma comment(lib, "winmm.lib")
 
@@ -34,24 +35,26 @@ void iDraw() {
     // Background scales to full screen
     iShowImage(0, 0, screenWidth, screenHeight, menubg);
 
-    // Logo: Original(390, 325) Size(300, 300)
-    iShowImage(390 * rw, 325 * rh, 300 * rw, 300 * rh, logo);
+    // Logo (Centered Top)
+    iShowImage(370 * rw, 260 * rh, 340 * rw, 340 * rh, logo);
 
-    // Continue: Original(285, 255) Size(215, 65)
-    iShowImage(285 * rw, 255 * rh, 215 * rw, 65 * rh, continuebut);
+    // New Game (Centered Middle)
+    iShowImage(430 * rw, 170 * rh, 220 * rw, 90 * rh, newgamebut);
 
-    // New Game: Original(580, 250) Size(240, 80)
-    iShowImage(580 * rw, 250 * rh, 240 * rw, 80 * rh, newgamebut);
+    // Continue (Centered Lower)
+    iShowImage(430 * rw, 90 * rh, 220 * rw, 70 * rh, continuebut);
 
-    // Volume Button
+    // Scores (Centered Bottom)
+    iShowImage(460 * rw, 10 * rh, 160 * rw, 70 * rh, scores);
+
+    // Levels (Bottom Right)
+    iShowImage(980 * rw, 30 * rh, 70 * rw, 70 * rh, levelbut);
+
+    // Volume Button (Bottom Left)
     if (vol)
-      iShowImage(0, 0, 70 * rw, 70 * rh, volon);
+      iShowImage(30 * rw, 30 * rh, 70 * rw, 70 * rh, volon);
     else
-      iShowImage(0, 0, 70 * rw, 70 * rh, voloff);
-
-    // Scores & Levels
-    iShowImage(440 * rw, 165 * rh, 180 * rw, 95 * rh, scores);
-    iShowImage(440 * rw, 90 * rh, 180 * rw, 95 * rh, levelbut);
+      iShowImage(30 * rw, 30 * rh, 70 * rw, 70 * rh, voloff);
   }
 
   else if (currentGameState == STATE_GAMEPLAY) {
@@ -64,6 +67,8 @@ void iDraw() {
       iText(490 * rw, 550 * rh, "SPIKES", GLUT_BITMAP_HELVETICA_18);
     else if (levelCount == 2)
       iText(480 * rw, 550 * rh, "SAWBLADES", GLUT_BITMAP_HELVETICA_18);
+    else if (levelCount == 3)
+      iText(420 * rw, 550 * rh, "GHOSTS & ILLUSIONS", GLUT_BITMAP_HELVETICA_18);
 
     // Floor Bricks - Use a loop that fills the screen width dynamically
     for (int x = 0; x < screenWidth; x += 100 * rw) {
@@ -75,7 +80,12 @@ void iDraw() {
     // Traps: These already have x/y coordinates.
     // IMPORTANT: When loading levels, multiply their initial x/y by rw/rh!
     for (int i = 0; i < noOfObj; i++) {
-      if (obj[i].isVisible) {
+      if (!obj[i].isVisible)
+        continue;
+      if (obj[i].type == 3) {
+        iShowImage(obj[i].x * rw, obj[i].y * rh, obj[i].width * rw,
+                   obj[i].height * rh, sawbladeArray[sawbladeFrame]);
+      } else {
         iShowImage(obj[i].x * rw, obj[i].y * rh, obj[i].width * rw,
                    obj[i].height * rh, objImg[obj[i].type]);
       }
@@ -205,12 +215,15 @@ void iPassiveMouseMove(int mx, int my) {}
 void iMouse(int button, int state, int mx, int my) {
 
   if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+    double rw = screenWidth / 1080.0;
+    double rh = screenHeight / 600.0;
+
     // Only check for clicks if we are currently on the menu
     if (currentGameState == STATE_MAIN_MENU) {
 
-      // New game button click
-      if (mx >= screenWidth * 0.509 && mx <= screenWidth * 0.731 &&
-          my >= screenHeight * 0.416 && my <= screenHeight * 0.55) {
+      // New game button click (X: 430 to 650, Y: 170 to 260)
+      if (mx >= 430 * rw && mx <= 650 * rw && my >= 170 * rh &&
+          my <= 260 * rh) {
         // currentGameState = STATE_ENTER_NAME; // Naming state
         currentGameState = STATE_GAMEPLAY;
 
@@ -235,14 +248,13 @@ void iMouse(int button, int state, int mx, int my) {
         }
       }
 
-      // Continue button
-      if (mx >= screenWidth * 0.263 && mx <= screenWidth * 0.462 &&
-          my >= screenHeight * 0.425 && my <= screenHeight * 0.533) {
+      // Continue button (X: 430 to 650, Y: 90 to 160)
+      if (mx >= 430 * rw && mx <= 650 * rw && my >= 90 * rh && my <= 160 * rh) {
         currentGameState = STATE_GAMEPLAY;
       }
 
-      // changing volume
-      if (mx <= screenWidth * 0.065 && my <= screenHeight * 0.116) {
+      // changing volume (X: 30 to 100, Y: 30 to 100)
+      if (mx >= 30 * rw && mx <= 100 * rw && my >= 30 * rh && my <= 100 * rh) {
         vol = !vol;
         // Opening/Loading the audio files
         mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0,
@@ -480,6 +492,13 @@ void fixedUpdate() {
   wasMovingLastFrame = isMoving;
 }
 
+void changeSawbladeFrame() {
+  sawbladeFrame++;
+  if (sawbladeFrame >= 8) {
+    sawbladeFrame = 0;
+  }
+}
+
 int main() {
 
   // Opening/Loading the audio files
@@ -501,6 +520,8 @@ int main() {
 
   initImages();
   levelDefining();
+
+  iSetTimer(30, changeSawbladeFrame); // Animate sawblade nicely
 
   iStart();
   return 0;

@@ -3,7 +3,9 @@
 #include "GameData.h"
 #include "Images.h"
 #include "Levelone.h"
+#include "Levelthree.h"
 #include "Leveltwo.h"
+
 
 int noOfObj;
 int obstacleHeight;
@@ -33,6 +35,14 @@ void levelDefining() {
       obj[i] = objLevel2[i];
     }
   } else if (levelCount == 3) {
+    subLevelDefining3();
+    subLevelCount = &subLevelCount3;
+    noOfObj = noOfObjLevel3;
+    obstacleHeight = obstacleHeightLevel3;
+    for (int i = 0; i < noOfObj; i++) {
+      obj[i] = objLevel3[i];
+    }
+  } else if (levelCount == 4) {
     currentGameState = STATE_WIN;
   }
   printf("Trigered\n");

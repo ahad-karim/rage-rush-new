@@ -8,120 +8,152 @@ int noOfObjLevel2;
 int subLevelCount2 = 1;
 GameObject objLevel2[50];
 
+
+
 void subLevelDefining2() {
-  if (subLevelCount2 == 1) {
-    // Sublevel 1: "Floor is Lava" - Small jumpable platforms above
-    // floor-hugging saws
-    noOfObjLevel2 = 0;
+	if (subLevelCount2 == 1) {
+		// Sublevel 1: "Floor is Lava" - Small jumpable platforms above
+		// floor-hugging saws
+		noOfObjLevel2 = 0;
 
-    // Platforms (Width=120, Height=60 is good for jumping)
-    objLevel2[noOfObjLevel2++] = {150,  100,   120,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    150,   100,   150, 100};
-    objLevel2[noOfObjLevel2++] = {400,  150,   120,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    400,   150,   400, 150};
-    objLevel2[noOfObjLevel2++] = {650,  100,   120,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    650,   100,   650, 100};
+		// Platforms (Width=120, Height=60 is good for jumping)
 
-    // Saws moving horizontally across the floor (y=60 is floor)
-    // Saw 1
-    objLevel2[noOfObjLevel2++] = {0, 60, 50, 50, 3, 0,  true, true, true,
-                                  8, 0,  300,  0,  0, 60, 1000, 60};
-    // Saw 2 (starts from right)
-    objLevel2[noOfObjLevel2++] = {1000, 60, 50, 50, 3,    0,  true, true, true,
-                                  8,    0,  0,  0,  1000, 60, 0,    60};
+		objLevel2[noOfObjLevel2++] = { 400, 130, 120, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 400, 130, 400, 130 };
 
-    // Door
-    /*objLevel2[noOfObjLevel2++] = {1000, 60,    100,   100,  1, 0,
-                                  true, false, false, 0,    0, 0,
-                                  0,    1000,  60,    1000, 60};*/
-  } else if (subLevelCount2 == 2) {
-    // Sublevel 2: "The Gauntlet" - Vertical saws that trigger as you progress
-    noOfObjLevel2 = 0;
 
-    // Platforms at varying heights
-    objLevel2[noOfObjLevel2++] = {200,  120,   100,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    200,   120,   200, 120};
-    objLevel2[noOfObjLevel2++] = {450,  180,   100,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    450,   180,   450, 180};
-    objLevel2[noOfObjLevel2++] = {700,  120,   100,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    700,   120,   700, 120};
+		// Saws moving horizontally across the floor (y=60 is floor)
+		// Saw 1
+		//objLevel2[noOfObjLevel2++] = {0, 60, 50, 50, 3, 0,  true, true, true,
+		//8, 0,  300,  0,  0, 60, 1000, 60};
+		objLevel2[noOfObjLevel2++] = { 300, 60, 50, 20, 0, 1, true, true, true,
+			20, 0, 275, 60, 300, 60, 250, 60 };
+		objLevel2[noOfObjLevel2++] = { 550, 60, 50, 20, 0, 1, true, true, true,
+			20, 0, 520, 0, 550, 60, 650, 60 };
+		// Saw 2 (starts from right)
+		objLevel2[noOfObjLevel2++] = { -100, 60, 50, 50, 3, 0, true, true, true,
+			10, 0, 550, 60, -100, 60, 900, 60 };
 
-    // Falling Saws (trigger when player gets close)
-    // Saw 1 (drops when hero.x > 100)
-    objLevel2[noOfObjLevel2++] = {225, 500, 50,  50, 3,   0,   true, true, true,
-                                  12,  1,   100, 0,  225, 500, 225,  60};
-    // Saw 2 (drops when hero.x > 350)
-    objLevel2[noOfObjLevel2++] = {475, 500, 50,  50, 3,   0,   true, true, true,
-                                  12,  1,   350, 0,  475, 500, 475,  60};
-    // Saw 3 (drops when hero.x > 600)
-    objLevel2[noOfObjLevel2++] = {725, 500, 50,  50, 3,   0,   true, true, true,
-                                  12,  1,   600, 0,  725, 500, 725,  60};
 
-    // Door
-    /*objLevel2[noOfObjLevel2++] = {1000, 60,    100,   100,  1, 0,
-                                  true, false, false, 0,    0, 0,
-                                  0,    1000,  60,    1000, 60};*/
-  } else if (subLevelCount2 == 3) {
-    // Sublevel 3: "Diagonal Death" - Crossing saws
-    noOfObjLevel2 = 0;
+		// Door
+		/*objLevel2[noOfObjLevel2++] = {1000, 60,    100,   100,  1, 0,
+		true, false, false, 0,    0, 0,
+		0,    1000,  60,    1000, 60};*/
 
-    // Platforms
-    objLevel2[noOfObjLevel2++] = {300,  150,   150,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    300,   150,   300, 150};
-    objLevel2[noOfObjLevel2++] = {600,  150,   150,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    600,   150,   600, 150};
+	}
+	else if (subLevelCount2 == 2) {
+		// Sublevel 2: "The Gauntlet" - Vertical saws that trigger as you progress
+		noOfObjLevel2 = 0;
 
-    // Diagonal Saw 1 (triggered by hero.x > 150)
-    objLevel2[noOfObjLevel2++] = {0, 500, 60,  60, 3, 0,   true, true, true,
-                                  7, 2,   150, 0,  0, 500, 1000, 60};
-    // Diagonal Saw 2 (triggered by hero.x > 150) - Crosses the other one
-    objLevel2[noOfObjLevel2++] = {1000, 500,  60,   60, 3, 0,
-                                  true, true, true, 7,  2, 150,
-                                  0,    1000, 500,  0,  60};
+		// Platforms at varying heights
+		objLevel2[noOfObjLevel2++] = { 300, 60, 50, 20, 0, 1,
+			true, true, false, 20, 0,
+			520, 0, 300, 60, 300, 60 };
+		objLevel2[noOfObjLevel2++] = { 400, 130, 120, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 400, 130, 400, 130 };
+		objLevel2[noOfObjLevel2++] = { 550, 60, 50, 20, 0, 1, true, true, true,
+			20, 0, 520, 0, 550, 60, 650, 60 };
+		objLevel2[noOfObjLevel2++] = { 700, 130, 120, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 700, 130, 450, 130 };
+		objLevel2[noOfObjLevel2++] = { 900, -100, 50, 20, 0, 1, true, true, true,
+			10, 1, 820, -100, 900, -100, 900, 60 };
 
-    // Door
-    /*objLevel2[noOfObjLevel2++] = {1000, 60,    100,   100,  1, 0,
-                                  true, false, false, 0,    0, 0,
-                                  0,    1000,  60,    1000, 60};*/
-  } else if (subLevelCount2 == 4) {
-    // Sublevel 4: "The Finale" - Precision Jumps + Fast Saws
-    noOfObjLevel2 = 0;
 
-    // Narrow risky platforms
-    objLevel2[noOfObjLevel2++] = {200,  130,   60,    40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    200,   130,   200, 130};
-    objLevel2[noOfObjLevel2++] = {400,  200,   60,    40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    400,   200,   400, 200};
-    objLevel2[noOfObjLevel2++] = {600,  130,   60,    40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    600,   130,   600, 130};
-    /*objLevel2[noOfObjLevel2++] = {800,  200,   60,    40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    800,   200,   800, 200};*/
 
-    // Fast Vertical Saws guarding the jumps
-    objLevel2[noOfObjLevel2++] = {300, 60, 50,  50, 3,   0,  true, true, true,
-                                  15,  1,  100, 0,  300, 60, 300,  500};
-    objLevel2[noOfObjLevel2++] = {500, 500, 50,  50, 3,   0,   true, true, true,
-                                  15,  1,   300, 0,  500, 500, 500,  60};
-    objLevel2[noOfObjLevel2++] = {700, 60, 50,  50, 3,   0,  true, true, true,
-                                  15,  1,  500, 0,  700, 60, 700,  500};
+		// Falling Saws (trigger when player gets close)
+		// Saw 1 (drops when hero.x > 100)
+		objLevel2[noOfObjLevel2++] = { 950, 60, 50, 50, 3, 1, true, true, true,
+			10, 0, 350, 0, 950, 60, -100, 60 };
+		objLevel2[noOfObjLevel2++] = { -100, 60, 50, 50, 3, 1, true, true, true,
+			10, 0, 550, 0, -100, 60, 1200, 60 };
+		// Door
+		/*objLevel2[noOfObjLevel2++] = {1000, 60,    100,   100,  1, 0,
+		true, false, false, 0,    0, 0,
+		0,    1000,  60,    1000, 60};*/
+	}
+	else if (subLevelCount2 == 3) {
+		// Sublevel 3: "Diagonal Death" - Crossing saws
+		noOfObjLevel2 = 0;
 
-    // Door
-    objLevel2[noOfObjLevel2++] = {1000, 60,    100,   100,  1, 0,
-                                  true, false, false, 0,    0, 0,
-                                  0,    1000,  60,    1000, 60};
-  }
+		// Platforms
+		objLevel2[noOfObjLevel2++] = { 400, 130, 120, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 400, 130, 400, 130 };
+		objLevel2[noOfObjLevel2++] = { 700, 130, 120, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 700, 130, 450, 130 };
+		objLevel2[noOfObjLevel2++] = { 435, 60, 50, 20, 0, 1, true, true, true,
+			10, 1, 400, 0, 435, 60, 435, -100 };
+
+		// Diagonal Saw 1 (triggered by hero.x > 150)
+		objLevel2[noOfObjLevel2++] = { -100, 60, 50, 50, 3, 0, true, true, true,
+			10, 2, 200, 60, -100, 60, 1200, 60 };
+		// Diagonal Saw 2 (triggered by hero.x > 150) - Crosses the other one
+		objLevel2[noOfObjLevel2++] = { 435, 750, 50, 50, 3, 1,
+			true, true, true, 10, 1, 400,
+			60, 435, 750, 435, -100 };
+		objLevel2[noOfObjLevel2++] = { -100, 160, 50, 50, 3, 0,
+			true, true, true, 10, 0, 550,
+			130, -100, 160, 1200, 160 };
+
+
+		// Door
+		/*objLevel2[noOfObjLevel2++] = {1000, 60,    100,   100,  1, 0,
+		true, false, false, 0,    0, 0,
+		0,    1000,  60,    1000, 60};*/
+	}
+	else if (subLevelCount2 == 4) {
+		// Sublevel 4: "The Finale" - Precision Jumps + Fast Saws
+		noOfObjLevel2 = 0;
+
+		// Narrow risky platforms
+		objLevel2[noOfObjLevel2++] = { 200, 130, 60, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 200, 130, 200, 130 };
+		objLevel2[noOfObjLevel2++] = { 400, 130, 60, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 400, 130, 400, 130 };
+		objLevel2[noOfObjLevel2++] = { 600, 130, 60, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 600, 130, 600, 130 };
+		objLevel2[noOfObjLevel2++] = { 800, 130, 60, 30, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 600, 130, 800, 130 };
+
+		/*objLevel2[noOfObjLevel2++] = {800,  200,   60,    40,  2,  0,
+		true, false, false, 0,   0,  0,
+		0,    800,   200,   800, 200};*/
+
+		objLevel2[noOfObjLevel2++] = { 275, 60, 50, 20, 0, 1, true, true, false,
+			20, 0, 520, 0, 275, 60, 275, 60 };
+		objLevel2[noOfObjLevel2++] = { 475, 60, 50, 20, 0, 1, true, true, false,
+			20, 0, 520, 0, 475, 60, 475, 60 };
+		objLevel2[noOfObjLevel2++] = { 675, 60, 50, 20, 0, 1, true, true, false,
+			20, 0, 520, 0, 675, 60, 675, 60 };
+
+		// Fast Vertical Saws guarding the jumps
+		objLevel2[noOfObjLevel2++] = { -100, 60, 50, 50, 3, 0, true, true, true,
+			10, 0, 100, 0, -100, 60, 1200, 60 };
+		objLevel2[noOfObjLevel2++] = { -100, 160, 50, 50, 3, 0, true, true, true,
+			10, 0, 300, 0, -100, 160, 1200, 160 };
+		objLevel2[noOfObjLevel2++] = { -100, 60, 50, 50, 3, 0, true, true, true,
+			10, 0, 500, 0, -100, 60, 1200, 60 };
+		objLevel2[noOfObjLevel2++] = { -100, 160, 50, 50, 3, 0, true, true, true,
+			10, 0, 500, 0, -100, 160, 1200, 160 };
+		objLevel2[noOfObjLevel2++] = { -100, 60, 50, 50, 3, 0, true, true, true,
+			10, 0, 500, 0, -100, 60, 1200, 60 };
+		objLevel2[noOfObjLevel2++] = { -1000, 160, 50, 50, 3, 0, true, true, true,
+			10, 0, 500, 0, -100, 160, 1200, 160 };
+
+
+		// Door
+		objLevel2[noOfObjLevel2++] = { 1000, 60, 100, 100, 1, 0,
+			true, false, false, 0, 0, 0,
+			0, 1000, 60, 1000, 60 };
+	}
 }
 
 #endif

@@ -2,6 +2,7 @@
 #define PHYSICS_H
 #include "GameData.h"
 #include "Level.h"
+#include <math.h>
 
 bool jumpDone = false;
 bool jumpStart = false;
@@ -101,8 +102,8 @@ void colisionDeal(Player &hero) {
 
   // --- Pass 2: Spikes, Doors, Moving Traps (original logic, unchanged) ---
   for (int i = 0; i < noOfObj; i++) {
-    if (obj[i].type == 2)
-      continue; // already handled above
+    if (obj[i].type == 2 || obj[i].type == 4)
+      continue; // already handled above or fake platform
 
     if (checkAABB(hero.x, hero.y, 40, 50, obj[i].x, obj[i].y, obj[i].width,
                   obj[i].height)) {
@@ -174,6 +175,21 @@ void triggerTrap(GameObject &trap, Player &hero) {
   if (!trap.willMove)
     return;
 
+  // Homing Ghost Logic (Smooth vector tracking, no boundaries)
+  if (trap.type == 5) {
+    double distX = hero.x - trap.x;
+    double distY = hero.y - trap.y;
+    double distance = sqrt(distX * distX + distY * distY);
+
+    if (distance > 0) {
+      // Normalize vector and multiply by speed
+      trap.x += (distX / distance) * (double)trap.speed;
+      trap.y += (distY / distance) * (double)trap.speed;
+    }
+    return; // Ghosts don't use standard trap logic
+  }
+
+  // Standard moving traps (Sawblades, etc)
   // Check if the hero has passed the trigger line
   if (hero.x > trap.trigX) {
     // 0 = X only, 1 = Y only, 2 = Both

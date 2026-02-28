@@ -14,9 +14,13 @@ int characterLeftArray[9];
 int characterLeftJumpArray[10];
 int characterDieArray[15];
 int staticChar;
-int platform, base, brick1, spikes1, door, sawblade;
+int platform, base, brick1, spikes1, door, sawblade, ghostImg;
+int sawbladeArray[8];
+int sawbladeFrame = 0;
 
-int objImg[4] = {spikes1, door, platform, sawblade};
+int objImg[6] = {
+    spikes1,  door,     platform,
+    sawblade, platform, ghostImg}; // Index 4 mapped to platform, 5 to ghostImg
 int sublevelbgArray[4];
 
 void initImages() {
@@ -127,10 +131,24 @@ void initImages() {
   objImg[1] = iLoadImage("Images//door.png");
   objImg[2] = iLoadImage("Images//platform.png");
   objImg[3] = iLoadImage("Images//sawblade1.png");
+  objImg[4] = iLoadImage("Images//platform.png");
+
+  ghostImg = iLoadImage("Images//ghost.png");
+  objImg[5] = ghostImg;
+
   sublevelbgArray[0] = sublevel1bg;
   sublevelbgArray[1] = sublevel2bg;
   sublevelbgArray[2] = sublevel3bg;
   sublevelbgArray[3] = sublevel4bg;
+
+  sawbladeArray[0] = iLoadImage("Images//blade1.png");
+  sawbladeArray[1] = iLoadImage("Images//blade2.png");
+  sawbladeArray[2] = iLoadImage("Images//blade3.png");
+  sawbladeArray[3] = iLoadImage("Images//blade4.png");
+  sawbladeArray[4] = iLoadImage("Images//blade5.png");
+  sawbladeArray[5] = iLoadImage("Images//blade6.png");
+  sawbladeArray[6] = iLoadImage("Images//blade7.png");
+  sawbladeArray[7] = iLoadImage("Images//blade8.png");
 }
 
 #endif
