@@ -72,6 +72,7 @@
     <ClInclude Include="Images.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="Levelone.h" />
+    <ClInclude Include="Levelthree.h" />
     <ClInclude Include="Leveltwo.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="stb_image.h" />

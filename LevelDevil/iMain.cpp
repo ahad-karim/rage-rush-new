@@ -21,10 +21,11 @@ bool isLeft = false;
 int doi = 545;
 int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
 int screenHeight = glutGet(GLUT_SCREEN_HEIGHT) - 70;
+int mouseX = 0, mouseY = 0;
 
 // Do not remove this line!!!!!!
 GameState currentGameState = STATE_MAIN_MENU;
-Player hero = {0, obstacleHeight, 5, 15, false, false, 50, 80, false};
+Player hero = {0, obstacleHeight, 5, 15, false, false, 40, 40, false};
 
 void iDraw() {
   iClear();
@@ -39,16 +40,32 @@ void iDraw() {
     iShowImage(370 * rw, 260 * rh, 340 * rw, 340 * rh, logo);
 
     // New Game (Centered Middle)
-    iShowImage(430 * rw, 170 * rh, 220 * rw, 90 * rh, newgamebut);
+    if (mouseX >= 430 * rw && mouseX <= 650 * rw && mouseY >= 170 * rh &&
+        mouseY <= 260 * rh)
+      iShowImage(430 * rw, 170 * rh, 220 * rw, 90 * rh, newgameHover);
+    else
+      iShowImage(430 * rw, 170 * rh, 220 * rw, 90 * rh, newgamebut);
 
     // Continue (Centered Lower)
-    iShowImage(430 * rw, 90 * rh, 220 * rw, 70 * rh, continuebut);
+    if (mouseX >= 430 * rw && mouseX <= 650 * rw && mouseY >= 90 * rh &&
+        mouseY <= 160 * rh)
+      iShowImage(430 * rw, 90 * rh, 220 * rw, 70 * rh, continueHover);
+    else
+      iShowImage(430 * rw, 90 * rh, 220 * rw, 70 * rh, continuebut);
 
     // Scores (Centered Bottom)
-    iShowImage(460 * rw, 10 * rh, 160 * rw, 70 * rh, scores);
+    if (mouseX >= 460 * rw && mouseX <= 620 * rw && mouseY >= 10 * rh &&
+        mouseY <= 80 * rh)
+      iShowImage(460 * rw, 10 * rh, 160 * rw, 70 * rh, scoresHover);
+    else
+      iShowImage(460 * rw, 10 * rh, 160 * rw, 70 * rh, scores);
 
     // Levels (Bottom Right)
-    iShowImage(980 * rw, 30 * rh, 70 * rw, 70 * rh, levelbut);
+    if (mouseX >= 980 * rw && mouseX <= 1050 * rw && mouseY >= 30 * rh &&
+        mouseY <= 100 * rh)
+      iShowImage(980 * rw, 30 * rh, 70 * rw, 40 * rh, levelbutHover);
+    else
+      iShowImage(980 * rw, 30 * rh, 70 * rw, 40 * rh, levelbut);
 
     // Volume Button (Bottom Left)
     if (vol)
@@ -104,6 +121,59 @@ void iDraw() {
     iShowImage(0, 0, screenWidth, screenHeight, win);
   } else if (currentGameState == STATE_GAME_OVER) {
     iShowImage(0, 0, screenWidth, screenHeight, gameover);
+  }
+
+  // ========== LEVEL SELECT PAGE ==========
+  else if (currentGameState == STATE_LEVEL_SELECT) {
+    // 1. Draw menu background
+    iShowImage(0, 0, screenWidth, screenHeight, menubg);
+
+    // 2. Dark overlay using OpenGL blending
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(screenWidth, 0);
+    glVertex2f(screenWidth, screenHeight);
+    glVertex2f(0, screenHeight);
+    glEnd();
+    glDisable(GL_BLEND);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // Reset color
+
+    // 3. Header text
+    iSetColor(100, 200, 255);
+    iText(410 * rw, 500 * rh, "SELECT LEVEL", GLUT_BITMAP_TIMES_ROMAN_24);
+    iSetColor(255, 255, 255);
+
+    // 4. Level buttons (centered row, square)
+    double btnSize = 150 * rw;
+    double gap = 40 * rw;
+    double totalW = 3 * btnSize + 2 * gap;
+    double startX = (screenWidth - totalW) / 2.0;
+    double btnY = 200 * rh;
+    double btn1X = startX;
+    double btn2X = startX + btnSize + gap;
+    double btn3X = startX + 2 * (btnSize + gap);
+
+    // Level 1
+    iShowImage(btn1X, btnY, btnSize, btnSize, level1Img);
+
+    // Level 2
+    iShowImage(btn2X, btnY, btnSize, btnSize, level2Img);
+
+    // Level 3
+    iShowImage(btn3X, btnY, btnSize, btnSize, level3Img);
+
+    // 5. Back button (text at bottom)
+    bool hovBack = (mouseX >= 480 * rw && mouseX <= 600 * rw &&
+                    mouseY >= 30 * rh && mouseY <= 70 * rh);
+    if (hovBack)
+      iSetColor(100, 200, 255);
+    else
+      iSetColor(180, 180, 180);
+    iText(500 * rw, 40 * rh, "< BACK", GLUT_BITMAP_TIMES_ROMAN_24);
+    iSetColor(255, 255, 255);
   }
 }
 
@@ -210,7 +280,10 @@ void myKeyboard(unsigned char key, int x, int y) {
 
 void iMouseMove(int mx, int my) {}
 
-void iPassiveMouseMove(int mx, int my) {}
+void iPassiveMouseMove(int mx, int my) {
+  mouseX = mx;
+  mouseY = my;
+}
 
 void iMouse(int button, int state, int mx, int my) {
 
@@ -250,6 +323,19 @@ void iMouse(int button, int state, int mx, int my) {
 
       // Continue button (X: 430 to 650, Y: 90 to 160)
       if (mx >= 430 * rw && mx <= 650 * rw && my >= 90 * rh && my <= 160 * rh) {
+        // Resume from the current level/sublevel (don't reset counters)
+        levelDefining();
+        hero.isDead = false;
+        hero.isDying = false;
+        currentImage = staticChar;
+        hero.x = 0;
+        hero.y = obstacleHeight;
+        imageLoop = 0;
+        levelDone = false;
+        for (int i = 0; i < noOfObj; i++) {
+          obj[i].x = obj[i].innitialX;
+          obj[i].y = obj[i].innitialY;
+        }
         currentGameState = STATE_GAMEPLAY;
       }
 
@@ -270,6 +356,85 @@ void iMouse(int button, int state, int mx, int my) {
           // If the use of an audio is finished, close it to free memory
           mciSendString("stop bgsong", NULL, 0, NULL);
         }
+      }
+      // Levels button click (X: 980 to 1050, Y: 30 to 100)
+      if (mx >= 980 * rw && mx <= 1050 * rw && my >= 30 * rh &&
+          my <= 100 * rh) {
+        currentGameState = STATE_LEVEL_SELECT;
+      }
+    }
+    // ========== LEVEL SELECT CLICK HANDLING ==========
+    else if (currentGameState == STATE_LEVEL_SELECT) {
+      double btnSize = 150 * rw;
+      double gap = 40 * rw;
+      double totalW = 3 * btnSize + 2 * gap;
+      double startX = (screenWidth - totalW) / 2.0;
+      double btnY = 200 * rh;
+      double btn1X = startX;
+      double btn2X = startX + btnSize + gap;
+      double btn3X = startX + 2 * (btnSize + gap);
+
+      // Level 1 click
+      if (mx >= btn1X && mx <= btn1X + btnSize && my >= btnY &&
+          my <= btnY + btnSize) {
+        levelCount = 1;
+        subLevelCount1 = 1;
+        levelDone = false;
+        levelDefining();
+        hero.isDead = false;
+        hero.isDying = false;
+        currentImage = staticChar;
+        hero.x = 0;
+        hero.y = obstacleHeight;
+        imageLoop = 0;
+        for (int i = 0; i < noOfObj; i++) {
+          obj[i].x = obj[i].innitialX;
+          obj[i].y = obj[i].innitialY;
+        }
+        currentGameState = STATE_GAMEPLAY;
+      }
+      // Level 2 click
+      else if (mx >= btn2X && mx <= btn2X + btnSize && my >= btnY &&
+               my <= btnY + btnSize) {
+        levelCount = 2;
+        subLevelCount2 = 1;
+        levelDone = false;
+        levelDefining();
+        hero.isDead = false;
+        hero.isDying = false;
+        currentImage = staticChar;
+        hero.x = 0;
+        hero.y = obstacleHeight;
+        imageLoop = 0;
+        for (int i = 0; i < noOfObj; i++) {
+          obj[i].x = obj[i].innitialX;
+          obj[i].y = obj[i].innitialY;
+        }
+        currentGameState = STATE_GAMEPLAY;
+      }
+      // Level 3 click
+      else if (mx >= btn3X && mx <= btn3X + btnSize && my >= btnY &&
+               my <= btnY + btnSize) {
+        levelCount = 3;
+        subLevelCount3 = 1;
+        levelDone = false;
+        levelDefining();
+        hero.isDead = false;
+        hero.isDying = false;
+        currentImage = staticChar;
+        hero.x = 0;
+        hero.y = obstacleHeight;
+        imageLoop = 0;
+        for (int i = 0; i < noOfObj; i++) {
+          obj[i].x = obj[i].innitialX;
+          obj[i].y = obj[i].innitialY;
+        }
+        currentGameState = STATE_GAMEPLAY;
+      }
+      // Back button click
+      else if (mx >= 480 * rw && mx <= 600 * rw && my >= 30 * rh &&
+               my <= 70 * rh) {
+        currentGameState = STATE_MAIN_MENU;
       }
     } else if (currentGameState == STATE_GAMEPLAY) {
       // Temporary

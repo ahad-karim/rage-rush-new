@@ -9,103 +9,186 @@ int subLevelCount3 = 1;
 GameObject objLevel3[50];
 
 void subLevelDefining3() {
-  if (subLevelCount3 == 1) {
-    // Sublevel 1: Introduction to Fake Platforms
-    noOfObjLevel3 = 0;
-    // Platform (Real)
-    objLevel3[noOfObjLevel3++] = {150,  100,   150,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    150,   100,   150, 100};
-    // Fake Platform
-    objLevel3[noOfObjLevel3++] = {400,  100,   150,   40,  4,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    400,   100,   400, 100};
-    // Real again
-    objLevel3[noOfObjLevel3++] = {400, 50, 150, 40, 2,   0,  true, false, false,
-                                  0,   0,  0,   0,  400, 50, 400,  50};
-    objLevel3[noOfObjLevel3++] = {700,  100,   150,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    700,   100,   700, 100};
-    // Sawblade moving vertically
-    objLevel3[noOfObjLevel3++] = {550, 150, 50, 50, 3,   0,   true, true, true,
-                                  5,   1,   0,  0,  550, 150, 550,  500};
+	if (subLevelCount3 == 1) {
+		// Sublevel 1: Introduction to Fake Platforms
+		noOfObjLevel3 = 0;
+		// Platform (Real)
+		objLevel3[noOfObjLevel3++] = { 200, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 200, 120, 200, 120 };
+		objLevel3[noOfObjLevel3++] = { 500, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 500, 120, 500, 120 };
+		objLevel3[noOfObjLevel3++] = { 800, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 800, 120, 800, 120 };
+		//Spikes
+		objLevel3[noOfObjLevel3++] = { 400, 60, 50, 20, 0, 1,
+			true, true, false, 0, 0, 0,
+			0, 400, 60, 400, 60 };
 
-    // Door (None until subLevelCount3 == 4)
-  } else if (subLevelCount3 == 2) {
-    // Sublevel 2: Intro to Ghost over a long pit
-    noOfObjLevel3 = 0;
-    objLevel3[noOfObjLevel3++] = {150, 60, 250, 40, 2,   0,  true, false, false,
-                                  0,   0,  0,   0,  150, 60, 150,  60};
-    objLevel3[noOfObjLevel3++] = {600, 60, 250, 40, 2,   0,  true, false, false,
-                                  0,   0,  0,   0,  600, 60, 600,  60};
-    // Vertical Sawblade
-    objLevel3[noOfObjLevel3++] = {400, 300, 50, 50, 3,   0,  true, true, true,
-                                  8,   1,   0,  0,  400, 60, 400,  500};
-    // Ghost (Proper speed)
-    objLevel3[noOfObjLevel3++] = {800, 200, 50, 50, 5,   0,   true, true, true,
-                                  3,   0,   0,  0,  800, 200, 800,  200};
-  } else if (subLevelCount3 == 3) {
-    // Sublevel 3: Ghost chasing while deducing fake platforms
-    noOfObjLevel3 = 0;
-    // Ghost (Proper speed)
-    objLevel3[noOfObjLevel3++] = {500, 250, 50, 50, 5,   0,   true, true, true,
-                                  3,   0,   0,  0,  500, 250, 500,  250};
+		// Fake Platform
+		/*objLevel3[noOfObjLevel3++] = {400,  100,   150,   40,  4,  0,
+		true, false, false, 0,   0,  0,
+		0,    400,   100,   400, 100};*/
 
-    // Horizontal Sawblade over Fake Platform
-    objLevel3[noOfObjLevel3++] = {
-        350, 200, 50, 50, 3,   0,   true, true, true,
-        4,   0,   0,  0,  350, 200, 600,  200}; // Real
-    objLevel3[noOfObjLevel3++] = {150,  100,   100,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    150,   100,   150, 100};
-    // Fake
-    objLevel3[noOfObjLevel3++] = {350,  150,   100,   40,  4,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    350,   150,   350, 150};
-    // Real underneath
-    objLevel3[noOfObjLevel3++] = {350, 60, 100, 40, 2,   0,  true, false, false,
-                                  0,   0,  0,   0,  350, 60, 350,  60};
-    // Real
-    objLevel3[noOfObjLevel3++] = {600,  150,   100,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    600,   150,   600, 150};
-    // Real
-    objLevel3[noOfObjLevel3++] = {850,  150,   100,   40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    850,   150,   850, 150};
-  } else if (subLevelCount3 == 4) {
-    // Sublevel 4: The Finale
-    noOfObjLevel3 = 0;
-    // Two Ghosts!
-    // Two Ghosts! (Proper speed)
-    objLevel3[noOfObjLevel3++] = {500, 250, 50, 50, 5,   0,   true, true, true,
-                                  2,   0,   0,  0,  500, 250, 500,  250};
-    objLevel3[noOfObjLevel3++] = {100, 300, 50, 50, 5,   0,   true, true, true,
-                                  2,   0,   0,  0,  100, 300, 100,  300};
 
-    // Fast Vertical Sawblades
-    objLevel3[noOfObjLevel3++] = {300, 250, 50, 50, 3,   0,  true, true, true,
-                                  10,  1,   0,  0,  300, 60, 300,  500};
-    objLevel3[noOfObjLevel3++] = {
-        600, 450, 50, 50, 3,   0,  true, true, true,
-        8,   1,   0,  0,  600, 60, 600,  500}; // Tiny tricky platforms
-    objLevel3[noOfObjLevel3++] = {200,  120,   80,    40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    200,   120,   200, 120};
-    objLevel3[noOfObjLevel3++] = {400,  180,   80,    40,  4,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    400,   180,   400, 180}; // fake
-    objLevel3[noOfObjLevel3++] = {500, 80, 80, 40, 2,   0,  true, false, false,
-                                  0,   0,  0,  0,  500, 80, 500,  80}; // catch
-    objLevel3[noOfObjLevel3++] = {750,  120,   80,    40,  2,  0,
-                                  true, false, false, 0,   0,  0,
-                                  0,    750,   120,   750, 120};
+		// Sawblade moving vertically
+		objLevel3[noOfObjLevel3++] = { -100, 140, 50, 50, 3, 0, true, true, true,
+			10, 0, 200, 100, -100, 140, 1200, 140 };
 
-    // Door
-    objLevel3[noOfObjLevel3++] = {1000, 60,    100,   100,  1, 0,
-                                  true, false, false, 0,    0, 0,
-                                  0,    1000,  60,    1000, 60};
-  }
+
+		//Ghost
+		objLevel3[noOfObjLevel3++] = { 1200, 200, 40, 40, 5, 0, true, true, true,
+			2, 0, 350, 100, 800, 200, 800, 200 };
+
+		// Door (None until subLevelCount3 == 4)
+	}
+	else if (subLevelCount3 == 2) {
+		// Sublevel 2: Intro to Ghost over a long pit
+		// Sublevel 1: Introduction to Fake Platforms
+		noOfObjLevel3 = 0;
+		// Platform (Real)
+		objLevel3[noOfObjLevel3++] = { 200, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 200, 120, 200, 120 };
+		objLevel3[noOfObjLevel3++] = { 500, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 500, 120, 500, 120 };
+		objLevel3[noOfObjLevel3++] = { 800, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 800, 120, 800, 120 };
+		// Fake Platform
+		/*objLevel3[noOfObjLevel3++] = {400,  100,   150,   40,  4,  0,
+		true, false, false, 0,   0,  0,
+		0,    400,   100,   400, 100};*/
+
+		objLevel3[noOfObjLevel3++] = { 700, 60, 50, 20, 0, 1,
+			true, true, false, 0, 0, 0,
+			0, 400, 60, 400, 60 };
+
+
+		// Sawblade moving vertically
+		objLevel3[noOfObjLevel3++] = { -100, 140, 50, 50, 3, 0, true, true, true,
+			10, 0, 200, 100, -100, 140, 1200, 140 };
+		objLevel3[noOfObjLevel3++] = { 1200, 60, 50, 50, 3, 0, true, true, true,
+			10, 0, 200, 100, 1200, 60, -100, 60 };
+		objLevel3[noOfObjLevel3++] = { 700, 750, 50, 50, 3, 0, true, true, true,
+			15, 1, 550, 0, 700, 750, 700, 60 };
+
+
+		//Ghost
+		objLevel3[noOfObjLevel3++] = { 1200, 200, 40, 40, 5, 0, true, true, true,
+			2, 0, 350, 100, 800, 200, 800, 200 };
+	}
+
+	else if (subLevelCount3 == 3) {
+		// Sublevel 2: Intro to Ghost over a long pit
+		// Sublevel 1: Introduction to Fake Platforms
+		noOfObjLevel3 = 0;
+		// Platform (Real)
+		objLevel3[noOfObjLevel3++] = { 200, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 200, 120, 200, 120 };
+		objLevel3[noOfObjLevel3++] = { 500, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 500, 120, 500, 120 };
+		objLevel3[noOfObjLevel3++] = { 800, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 800, 120, 800, 120 };
+		// Fake Platform
+		/*objLevel3[noOfObjLevel3++] = {400,  100,   150,   40,  4,  0,
+		true, false, false, 0,   0,  0,
+		0,    400,   100,   400, 100};*/
+
+		objLevel3[noOfObjLevel3++] = { 350, 60, 50, 20, 0, 1,
+			true, true, true, 10, 0, 350,
+			0, 350, 60, 450, 60 };
+
+		objLevel3[noOfObjLevel3++] = { 650, 60, 50, 20, 0, 1,
+			true, true, true, 10, 0, 650,
+			0, 650, 60, 750, 60 };
+		objLevel3[noOfObjLevel3++] = { 850, 155, 50, 20, 0, 1,
+			true, true, false, 0, 0, 0,
+			0, 850, 155, 850, 155 };
+
+
+		// Sawblade moving vertically
+		objLevel3[noOfObjLevel3++] = { -100, 140, 50, 50, 3, 0, true, true, true,
+			10, 0, 200, 100, -100, 140, 1200, 140 };
+		objLevel3[noOfObjLevel3++] = { -100, 140, 50, 50, 3, 0, true, true, true,
+			10, 0, 500, 100, -100, 140, 1200, 140 };
+		objLevel3[noOfObjLevel3++] = { -100, 140, 50, 50, 3, 0, true, true, true,
+			10, 0, 800, 100, -100, 140, 1200, 140 };
+
+
+
+
+
+		//Ghost
+		objLevel3[noOfObjLevel3++] = { 1200, 200, 40, 40, 5, 0, true, true, true,
+			2, 0, 350, 100, 800, 200, 800, 200 };
+	}
+
+
+	else if (subLevelCount3 == 4) {
+		// Sublevel 4: The Finale
+		noOfObjLevel3 = 0;
+		// Platform (Real)
+		objLevel3[noOfObjLevel3++] = { 200, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 200, 120, 200, 120 };
+		objLevel3[noOfObjLevel3++] = { 400, 120, 150, 40, 4, 0,
+			true, false, false, 0, 0, 0,
+			0, 400, 120, 350, 120 };
+		objLevel3[noOfObjLevel3++] = { 600, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 600, 120, 500, 120 };
+		objLevel3[noOfObjLevel3++] = { 800, 120, 150, 40, 2, 0,
+			true, false, false, 0, 0, 0,
+			0, 800, 120, 800, 120 };
+
+
+		// Fake Platform
+		/*objLevel3[noOfObjLevel3++] = {400,  100,   150,   40,  4,  0,
+		true, false, false, 0,   0,  0,
+		0,    400,   100,   400, 100};*/
+
+		objLevel3[noOfObjLevel3++] = { 350, 60, 50, 20, 0, 1,
+			true, true, false, 0, 0, 0,
+			0, 350, 60, 350, 60 };
+		objLevel3[noOfObjLevel3++] = { 550, 60, 50, 20, 0, 1,
+			true, true, false, 0, 0, 350,
+			0, 550, 160, 850, 160 };
+		objLevel3[noOfObjLevel3++] = { 750, 60, 50, 20, 0, 1,
+			true, true, false, 0, 0, 350,
+			0, 750, 160, 850, 160 };
+
+
+
+
+
+		// Sawblade moving vertically
+		objLevel3[noOfObjLevel3++] = { -100, 140, 50, 50, 3, 0, true, true, true,
+			10, 0, 400, 100, -100, 140, 1200, 140 };
+
+
+
+
+
+
+		//Ghost
+		objLevel3[noOfObjLevel3++] = { 1200, 200, 40, 40, 5, 0, true, true, true,
+			2, 0, 350, 100, 800, 200, 800, 200 };
+		objLevel3[noOfObjLevel3++] = { 0, 200, 40, 40, 5, 0, true, true, true,
+			2, 0, 350, 100, 800, 200, 800, 200 };
+
+
+		// Door
+		objLevel3[noOfObjLevel3++] = { 1000, 60, 100, 100, 1, 0,
+			true, false, false, 0, 0, 0,
+			0, 1000, 60, 1000, 60 };
+	}
 }
 
 #endif

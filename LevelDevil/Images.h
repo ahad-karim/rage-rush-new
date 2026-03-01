@@ -1,8 +1,10 @@
 #ifndef IMAGES_H
 #define IMAGES_H
 
-int logo, newgamebut, continuebut, volon, voloff, scores, levelbut, background1,
-    menubg, sublevel1bg, sublevel2bg, sublevel3bg, sublevel4bg, win, gameover;
+int logo, newgamebut, newgameHover, continuebut, continueHover, volon, voloff,
+    scores, scoresHover, levelbut, levelbutHover, level1Img, level1HoverImg,
+    level2Img, level3Img, background1, menubg, sublevel1bg, sublevel2bg,
+    sublevel3bg, sublevel4bg, win, gameover;
 int rightmove1, rightmove2, rightmove3, currentImage;
 int leftmove1, leftmove2, leftmove3;
 int leftjump1, leftjump2, leftjump3, leftjump4, leftjump5;
@@ -26,11 +28,19 @@ int sublevelbgArray[4];
 void initImages() {
   logo = iLoadImage("Images//logo3.png");
   newgamebut = iLoadImage("Images//newgame.png");
+  newgameHover = iLoadImage("Images//newgameHover.png");
   continuebut = iLoadImage("Images//continue.png");
+  continueHover = iLoadImage("Images//continueHover.png");
   volon = iLoadImage("Images//volon.png");
   voloff = iLoadImage("Images//voloff.png");
   scores = iLoadImage("Images//score2.png");
+  scoresHover = iLoadImage("Images//score2Hover.png");
   levelbut = iLoadImage("Images//levels.png");
+  levelbutHover = iLoadImage("Images//levelsHover.png");
+  level1Img = iLoadImage("Images//level1.png");
+  level1HoverImg = iLoadImage("Images//level1Hover.png");
+  level2Img = iLoadImage("Images//level2.png");
+  level3Img = iLoadImage("Images//level3.png");
   rightmove1 = iLoadImage("Images//character/rightmove1.png");
   rightmove2 = iLoadImage("Images//character/rightmove2.png");
   rightmove3 = iLoadImage("Images//character/rightmove3.png");

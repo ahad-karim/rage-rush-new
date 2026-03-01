@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-int levelCount = 3;
+int levelCount = 1;
 
 struct PlayerData {
   char name[50];
@@ -20,7 +20,8 @@ enum GameState {
   STATE_SCOREBOARD, // 3
   STATE_GAMEPLAY,   // 4
   STATE_WIN,
-  STATE_GAME_OVER
+  STATE_GAME_OVER,
+  STATE_LEVEL_SELECT // 7
 };
 
 // This is the actual variable that tracks which state we are in
