@@ -75,17 +75,24 @@ void iDraw() {
   }
 
   else if (currentGameState == STATE_GAMEPLAY) {
-    // Draw the moving background
-    iShowImage(0, 0, screenWidth, screenHeight,
-               sublevelbgArray[*subLevelCount - 1]);
+    
 
     // Draw Header Text (Centered)
-    if (levelCount == 1)
-      iText(490 * rw, 550 * rh, "SPIKES", GLUT_BITMAP_HELVETICA_18);
-    else if (levelCount == 2)
-      iText(480 * rw, 550 * rh, "SAWBLADES", GLUT_BITMAP_HELVETICA_18);
-    else if (levelCount == 3)
-      iText(420 * rw, 550 * rh, "GHOSTS & ILLUSIONS", GLUT_BITMAP_HELVETICA_18);
+	if (levelCount == 1)
+	{
+		iShowImage(0, 0, screenWidth, screenHeight, l1bg[*subLevelCount - 1]);
+		iText(490 * rw, 550 * rh, "SPIKES", GLUT_BITMAP_HELVETICA_18);
+	}	
+	else if (levelCount == 2) {
+		iShowImage(0, 0, screenWidth, screenHeight, l2bg[*subLevelCount - 1]);
+		iText(480 * rw, 550 * rh, "SAWBLADES", GLUT_BITMAP_HELVETICA_18);
+	}
+      
+	else if (levelCount == 3) {
+		iShowImage(0, 0, screenWidth, screenHeight, l3bg[*subLevelCount - 1]);
+		iText(420 * rw, 550 * rh, "GHOSTS & ILLUSIONS", GLUT_BITMAP_HELVETICA_18);
+	}
+      
 
     // Floor Bricks - Use a loop that fills the screen width dynamically
     for (int x = 0; x < screenWidth; x += 100 * rw) {
@@ -102,7 +109,13 @@ void iDraw() {
       if (obj[i].type == 3) {
         iShowImage(obj[i].x * rw, obj[i].y * rh, obj[i].width * rw,
                    obj[i].height * rh, sawbladeArray[sawbladeFrame]);
-      } else {
+	  }
+	  else if (obj[i].type == 5) {
+		  iShowImage((obj[i].x * rw)+5, (obj[i].y * rh)+5, (obj[i].width * rw)-5,
+			  (obj[i].height * rh)-5, objImg[obj[i].type]);
+	  }
+	  
+	  else {
         iShowImage(obj[i].x * rw, obj[i].y * rh, obj[i].width * rw,
                    obj[i].height * rh, objImg[obj[i].type]);
       }

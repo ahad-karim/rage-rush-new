@@ -19,6 +19,9 @@ int staticChar;
 int platform, base, brick1, spikes1, door, sawblade, ghostImg;
 int sawbladeArray[8];
 int sawbladeFrame = 0;
+int l1bg[4];
+int l2bg[4];
+int l3bg[4];
 
 int objImg[6] = {
     spikes1,  door,     platform,
@@ -60,6 +63,22 @@ void initImages() {
   door = iLoadImage("Images//door.png");
   win = iLoadImage("Images//win.png");
   gameover = iLoadImage("Images//gameover.jpg");
+
+  l1bg[0] = iLoadImage("Images//l1s1bg.png");
+  l1bg[1] = iLoadImage("Images//l1s2bg.png");
+  l1bg[2] = iLoadImage("Images//l1s3bg.png");
+  l1bg[3] = iLoadImage("Images//l1s4bg.png");
+
+  l2bg[0] = iLoadImage("Images//l2s1bg.png");
+  l2bg[1] = iLoadImage("Images//l2s2bg.png");
+  l2bg[2] = iLoadImage("Images//l2s3bg.png");
+  l2bg[3] = iLoadImage("Images//l2s4bg.png");
+
+  l3bg[0] = iLoadImage("Images//l3s1bg.png");
+  l3bg[1] = iLoadImage("Images//l3s2bg.png");
+  l3bg[2] = iLoadImage("Images//l3s3bg.png");
+  l3bg[3] = iLoadImage("Images//l3s4bg.png");
+
 
   int idx = 0;
   for (int i = 0; i < 3; i++) {

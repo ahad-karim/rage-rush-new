@@ -12,7 +12,6 @@ GameObject objLevel2[50];
 
 void subLevelDefining2() {
 	if (subLevelCount2 == 1) {
-		// Sublevel 1: "Floor is Lava" - Small jumpable platforms above
 		// floor-hugging saws
 		noOfObjLevel2 = 0;
 
