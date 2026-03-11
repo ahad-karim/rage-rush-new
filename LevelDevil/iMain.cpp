@@ -6,6 +6,7 @@
 #include "Physics.h"
 
 #include <mmsystem.h>
+#include <math.h>
 #include <string>
 #include <time.h>
 
@@ -92,6 +93,10 @@ void iDraw() {
 		iShowImage(0, 0, screenWidth, screenHeight, l3bg[*subLevelCount - 1]);
 		iText(420 * rw, 550 * rh, "GHOSTS & ILLUSIONS", GLUT_BITMAP_HELVETICA_18);
 	}
+	else if (levelCount == 4) {
+		iShowImage(0, 0, screenWidth, screenHeight, l4bg[*subLevelCount - 1]);
+		iText(470 * rw, 550 * rh, "DARKNESS", GLUT_BITMAP_HELVETICA_18);
+	}
       
 
     // Floor Bricks - Use a loop that fills the screen width dynamically
@@ -127,6 +132,79 @@ void iDraw() {
     if (hero.isDead) {
       iText(470 * rw, 250 * rh, "Game Over", GLUT_BITMAP_TIMES_ROMAN_24);
     }
+
+    // ========== DARKNESS OVERLAY (Level 4) ==========
+    if (levelCount == 4 && hero.x >= darknessTriggerX) {
+      // Player center in screen coordinates
+      double cx = (hero.x + 25) * rw;  // center of 50-wide hero
+      double cy = (hero.y + 25) * rh;  // center of 50-tall hero
+      double rad = darknessRadius * rw;
+      int segments = 40;
+
+      // Step 1: Clear stencil buffer
+      glEnable(GL_STENCIL_TEST);
+      glClearStencil(0);
+      glClear(GL_STENCIL_BUFFER_BIT);
+
+      // Step 2: Draw circle into stencil (mark circle area as 1)
+      glStencilFunc(GL_ALWAYS, 1, 0xFF);
+      glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+      glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE); // Don't draw to color
+
+      glBegin(GL_TRIANGLE_FAN);
+      glVertex2f(cx, cy);
+      for (int i = 0; i <= segments; i++) {
+        double angle = 2.0 * 3.14159265 * i / segments;
+        glVertex2f(cx + rad * cos(angle), cy + rad * sin(angle));
+      }
+      glEnd();
+
+      glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // Re-enable color
+
+      // Step 3: Draw semi-transparent black overlay ONLY where stencil != 1 (outside circle)
+      glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+      glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glColor4f(0.0f, 0.0f, 0.0f, 0.85f);
+      glBegin(GL_QUADS);
+      glVertex2f(0, 0);
+      glVertex2f(screenWidth, 0);
+      glVertex2f(screenWidth, screenHeight);
+      glVertex2f(0, screenHeight);
+      glEnd();
+      glDisable(GL_BLEND);
+
+      glDisable(GL_STENCIL_TEST);
+      glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // Reset color
+    }
+
+    // ========== RAGE METER (top-right) ==========
+    double meterW = 200 * rw;
+    double meterH = 22 * rh;
+    double meterX = screenWidth - meterW - 40 * rw;
+    double meterY = screenHeight - 50 * rh;
+    double fillRatio = (double)rageDeaths / 10.0;
+    if (fillRatio > 1.0) fillRatio = 1.0;
+
+    // Background (dark gray)
+    iSetColor(40, 40, 40);
+    iFilledRectangle(meterX, meterY, meterW, meterH);
+
+    // Fill (green -> yellow -> red gradient based on ratio)
+    int r = (int)(255 * fillRatio);
+    int g = (int)(255 * (1.0 - fillRatio));
+    iSetColor(r, g, 0);
+    iFilledRectangle(meterX, meterY, meterW * fillRatio, meterH);
+
+    // Border (white)
+    iSetColor(200, 200, 200);
+    iRectangle(meterX, meterY, meterW, meterH);
+
+    // Label
+    iSetColor(255, 255, 255);
+    iText(meterX, meterY + meterH + 5 * rh, "RAGE", GLUT_BITMAP_HELVETICA_18);
   }
 
   // ... Repeat for WIN and GAME_OVER states ...
@@ -323,6 +401,7 @@ void iMouse(int button, int state, int mx, int my) {
         imageLoop = 0;
         levelDone = false;
         levelCount = 1;
+        rageDeaths = 0;
 
         // Need to be changed for level 2
         subLevelCount1 = 1;
@@ -391,6 +470,7 @@ void iMouse(int button, int state, int mx, int my) {
       if (mx >= btn1X && mx <= btn1X + btnSize && my >= btnY &&
           my <= btnY + btnSize) {
         levelCount = 1;
+        rageDeaths = 0;
         subLevelCount1 = 1;
         levelDone = false;
         levelDefining();
@@ -410,6 +490,7 @@ void iMouse(int button, int state, int mx, int my) {
       else if (mx >= btn2X && mx <= btn2X + btnSize && my >= btnY &&
                my <= btnY + btnSize) {
         levelCount = 2;
+        rageDeaths = 0;
         subLevelCount2 = 1;
         levelDone = false;
         levelDefining();
@@ -429,6 +510,7 @@ void iMouse(int button, int state, int mx, int my) {
       else if (mx >= btn3X && mx <= btn3X + btnSize && my >= btnY &&
                my <= btnY + btnSize) {
         levelCount = 3;
+        rageDeaths = 0;
         subLevelCount3 = 1;
         levelDone = false;
         levelDefining();
@@ -617,6 +699,17 @@ void fixedUpdate() {
   }
 
   if (hero.isDead) {
+    rageDeaths++;
+
+    if (rageDeaths >= RAGE_MAX) {
+      // Rage meter full — reset to sublevel 1 of current level
+      rageDeaths = 0;
+      if (levelCount == 1) subLevelCount1 = 1;
+      else if (levelCount == 2) subLevelCount2 = 1;
+      else if (levelCount == 3) subLevelCount3 = 1;
+      levelDefining();
+    }
+
     currentGameState = STATE_GAME_OVER;
     hero.isDead = false;
     hero.isDying = false;

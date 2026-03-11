@@ -5,6 +5,7 @@
 #include "Levelone.h"
 #include "Levelthree.h"
 #include "Leveltwo.h"
+#include "Levelfour.h"
 
 
 int noOfObj;
@@ -17,6 +18,7 @@ void levelDefining() {
   if (levelDone == true) {
     levelCount++;
     levelDone = false;
+    rageDeaths = 0;
   }
   if (levelCount == 1) {
     subLevelDefining1();
@@ -43,6 +45,14 @@ void levelDefining() {
       obj[i] = objLevel3[i];
     }
   } else if (levelCount == 4) {
+    subLevelDefining4();
+    subLevelCount = &subLevelCount4;
+    noOfObj = noOfObjLevel4;
+    obstacleHeight = obstacleHeightLevel4;
+    for (int i = 0; i < noOfObj; i++) {
+      obj[i] = objLevel4[i];
+    }
+  } else if (levelCount == 5) {
     currentGameState = STATE_WIN;
   }
   printf("Trigered\n");

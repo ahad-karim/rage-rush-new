@@ -520,7 +520,7 @@ void iInitialize(int width=500, int height=500, char *title="iGraphics", int key
     iScreenHeight = height;
     iScreenWidth = width;
 
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA) ;
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_ALPHA | GLUT_STENCIL) ;
     glutInitWindowSize(width , height ) ;
     glutInitWindowPosition( 10 , 10 ) ;
     glutCreateWindow(title) ;

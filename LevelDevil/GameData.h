@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
-int levelCount = 1;
+int levelCount = 4;
+int rageDeaths = 0;
+#define RAGE_MAX 11
 
 struct PlayerData {
   char name[50];

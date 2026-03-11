@@ -22,6 +22,7 @@ int sawbladeFrame = 0;
 int l1bg[4];
 int l2bg[4];
 int l3bg[4];
+int l4bg[4];
 
 int objImg[6] = {
     spikes1,  door,     platform,
@@ -78,6 +79,12 @@ void initImages() {
   l3bg[1] = iLoadImage("Images//l3s2bg.png");
   l3bg[2] = iLoadImage("Images//l3s3bg.png");
   l3bg[3] = iLoadImage("Images//l3s4bg.png");
+
+  // Level 4 backgrounds (reuse sublevel backgrounds since level is dark)
+  l4bg[0] = sublevel1bg;
+  l4bg[1] = sublevel2bg;
+  l4bg[2] = sublevel3bg;
+  l4bg[3] = sublevel4bg;
 
 
   int idx = 0;
