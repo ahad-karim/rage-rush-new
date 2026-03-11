@@ -71,4 +71,7 @@ struct Level {
   int startX, startY; // Where player spawns
 };
 
+// Declared here so other files (like Level.h) can save data
+void saveGameData();
+
 #endif

@@ -19,6 +19,12 @@ void levelDefining() {
     levelCount++;
     levelDone = false;
     rageDeaths = 0;
+    
+    // Update player stats and save
+    if (currentPlayerIndex >= 0 && currentPlayerIndex < totalPlayers) {
+      allPlayers[currentPlayerIndex].level = levelCount;
+      saveGameData();
+    }
   }
   if (levelCount == 1) {
     subLevelDefining1();

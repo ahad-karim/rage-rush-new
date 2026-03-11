@@ -18,6 +18,9 @@ bool vol = true;
 char inputName[50] = "";
 int nameIndex = 0;
 int imageLoop = 0;
+
+// Debounce array for name input key polling
+bool prevKeyState[256] = {false};
 bool isLeft = false;
 int doi = 545;
 int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
@@ -73,6 +76,115 @@ void iDraw() {
       iShowImage(30 * rw, 30 * rh, 70 * rw, 70 * rh, volon);
     else
       iShowImage(30 * rw, 30 * rh, 70 * rw, 70 * rh, voloff);
+  }
+
+  // ========== NAME ENTRY SCREEN ==========
+  else if (currentGameState == STATE_ENTER_NAME) {
+    // 1. Draw menu background
+    iShowImage(0, 0, screenWidth, screenHeight, menubg);
+
+    // 2. Dark overlay
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.65f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(screenWidth, 0);
+    glVertex2f(screenWidth, screenHeight);
+    glVertex2f(0, screenHeight);
+    glEnd();
+    glDisable(GL_BLEND);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // 3. Prompt text
+    iSetColor(100, 200, 255);
+    iText(370 * rw, 400 * rh, "ENTER YOUR NAME", GLUT_BITMAP_TIMES_ROMAN_24);
+
+    // 4. Input box background
+    iSetColor(30, 30, 30);
+    iFilledRectangle(340 * rw, 300 * rh, 400 * rw, 50 * rh);
+    iSetColor(100, 200, 255);
+    iRectangle(340 * rw, 300 * rh, 400 * rw, 50 * rh);
+
+    // 5. Typed name text
+    iSetColor(255, 255, 255);
+    iText(360 * rw, 318 * rh, inputName, GLUT_BITMAP_TIMES_ROMAN_24);
+
+    // 6. Blinking cursor (simple underscore)
+    char cursorText[55];
+    strcpy_s(cursorText, sizeof(cursorText), inputName);
+    strcat_s(cursorText, sizeof(cursorText), "_");
+    iSetColor(100, 200, 255);
+    // Draw cursor at end of text
+    int textLen = strlen(inputName);
+    iText((360 + textLen * 12) * rw, 318 * rh, "_", GLUT_BITMAP_TIMES_ROMAN_24);
+
+    // 7. Instructions
+    iSetColor(150, 150, 150);
+    iText(390 * rw, 260 * rh, "Press ENTER to start", GLUT_BITMAP_HELVETICA_18);
+  }
+
+  // ========== SCOREBOARD SCREEN ==========
+  else if (currentGameState == STATE_SCOREBOARD) {
+    // 1. Draw menu background
+    iShowImage(0, 0, screenWidth, screenHeight, menubg);
+
+    // 2. Dark overlay for readability
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.75f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(screenWidth, 0);
+    glVertex2f(screenWidth, screenHeight);
+    glVertex2f(0, screenHeight);
+    glEnd();
+    glDisable(GL_BLEND);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // 3. Header text
+    iSetColor(100, 200, 255);
+    iText(420 * rw, 500 * rh, "PLAYER SCORES", GLUT_BITMAP_TIMES_ROMAN_24);
+
+    // 4. Table Headers
+    iSetColor(200, 200, 200);
+    iText(200 * rw, 440 * rh, "NAME", GLUT_BITMAP_HELVETICA_18);
+    iText(500 * rw, 440 * rh, "LEVEL REACHED", GLUT_BITMAP_HELVETICA_18);
+    iText(800 * rw, 440 * rh, "DEATHS", GLUT_BITMAP_HELVETICA_18);
+
+    // 5. Lines separator
+    iSetColor(100, 100, 100);
+    iLine(180 * rw, 430 * rh, 900 * rw, 430 * rh);
+
+    // 6. Draw Player Data
+    iSetColor(255, 255, 255);
+    double startY = 390 * rh;
+    double gapY = 30 * rh;
+    int displayLimit = (totalPlayers > 12) ? 12 : totalPlayers;
+
+    if (totalPlayers == 0) {
+      iSetColor(150, 150, 150);
+      iText(400 * rw, 350 * rh, "No players registered yet.", GLUT_BITMAP_HELVETICA_18);
+    } else {
+      for (int i = 0; i < displayLimit; i++) {
+        // Name
+        iText(200 * rw, startY - (i * gapY), allPlayers[i].name, GLUT_BITMAP_HELVETICA_18);
+        
+        // Level
+        char lvlStr[10];
+        sprintf_s(lvlStr, sizeof(lvlStr), "%d", allPlayers[i].level);
+        iText(550 * rw, startY - (i * gapY), lvlStr, GLUT_BITMAP_HELVETICA_18);
+        
+        // Deaths
+        char dthStr[10];
+        sprintf_s(dthStr, sizeof(dthStr), "%d", allPlayers[i].deaths);
+        iText(820 * rw, startY - (i * gapY), dthStr, GLUT_BITMAP_HELVETICA_18);
+      }
+    }
+
+    // 7. Return Instructions
+    iSetColor(150, 150, 150);
+    iText(380 * rw, 50 * rh, "Press ESC or BACKSPACE to return", GLUT_BITMAP_HELVETICA_18);
   }
 
   else if (currentGameState == STATE_GAMEPLAY) {
@@ -338,32 +450,7 @@ void registerNewPlayer(char *name) {
 }
 
 void myKeyboard(unsigned char key, int x, int y) {
-  if (currentGameState == STATE_ENTER_NAME) {
-    if (key == '\r') { // Enter key
-      if (nameIndex > 0) {
-        // Save and start game
-        registerNewPlayer(inputName);
-        currentGameState = STATE_GAMEPLAY;
-
-        // Clear for next time
-        nameIndex = 0;
-        inputName[0] = '\0';
-      }
-    } else if (key == '\b') { // Backspace
-      if (nameIndex > 0) {
-        nameIndex--;
-        inputName[nameIndex] = '\0';
-      }
-    } else if (key >= 32 && key <= 126) { // Printable characters
-      if (nameIndex < 49) {
-        inputName[nameIndex] = key;
-        nameIndex++;
-        inputName[nameIndex] = '\0';
-      }
-    }
-  }
-
-  // This tells the window to refresh after typing a letter
+  // Name input is handled in fixedUpdate via isKeyPressed polling
   glutPostRedisplay();
 }
 
@@ -388,29 +475,9 @@ void iMouse(int button, int state, int mx, int my) {
       // New game button click (X: 430 to 650, Y: 170 to 260)
       if (mx >= 430 * rw && mx <= 650 * rw && my >= 170 * rh &&
           my <= 260 * rh) {
-        // currentGameState = STATE_ENTER_NAME; // Naming state
-        currentGameState = STATE_GAMEPLAY;
-
+        currentGameState = STATE_ENTER_NAME;
         nameIndex = 0;
         inputName[0] = '\0';
-        hero.isDead = false;
-        hero.isDying = false;
-        currentImage = staticChar;
-        hero.x = 0;
-        hero.y = obstacleHeight;
-        imageLoop = 0;
-        levelDone = false;
-        levelCount = 1;
-        rageDeaths = 0;
-
-        // Need to be changed for level 2
-        subLevelCount1 = 1;
-        levelDefining();
-
-        for (int i = 0; i < noOfObj; i++) {
-          obj[i].x = obj[i].innitialX;
-          obj[i].y = obj[i].innitialY;
-        }
       }
 
       // Continue button (X: 430 to 650, Y: 90 to 160)
@@ -429,6 +496,11 @@ void iMouse(int button, int state, int mx, int my) {
           obj[i].y = obj[i].innitialY;
         }
         currentGameState = STATE_GAMEPLAY;
+      }
+
+      // Scores button (X: 460 to 620, Y: 10 to 80)
+      if (mx >= 460 * rw && mx <= 620 * rw && my >= 10 * rh && my <= 80 * rh) {
+        currentGameState = STATE_SCOREBOARD;
       }
 
       // changing volume (X: 30 to 100, Y: 30 to 100)
@@ -556,6 +628,92 @@ bool wasMovingLastFrame = false;
 clock_t lastTime = 0;
 double interval = 1.5;
 void fixedUpdate() {
+
+  // ========== NAME INPUT (key polling with debounce) ==========
+  if (currentGameState == STATE_ENTER_NAME) {
+    // Check Enter key (13)
+    if (isKeyPressed(13) && !prevKeyState[13]) {
+      if (nameIndex > 0) {
+        registerNewPlayer(inputName);
+
+        hero.isDead = false;
+        hero.isDying = false;
+        currentImage = staticChar;
+        hero.x = 0;
+        hero.y = obstacleHeight;
+        imageLoop = 0;
+        levelDone = false;
+        levelCount = 1;
+        rageDeaths = 0;
+        subLevelCount1 = 1;
+        levelDefining();
+        for (int i = 0; i < noOfObj; i++) {
+          obj[i].x = obj[i].innitialX;
+          obj[i].y = obj[i].innitialY;
+        }
+        currentGameState = STATE_GAMEPLAY;
+        nameIndex = 0;
+        inputName[0] = '\0';
+      }
+    }
+    prevKeyState[13] = isKeyPressed(13);
+
+    // Check Backspace key (8)
+    if (isKeyPressed(8) && !prevKeyState[8]) {
+      if (nameIndex > 0) {
+        nameIndex--;
+        inputName[nameIndex] = '\0';
+      }
+    }
+    prevKeyState[8] = isKeyPressed(8);
+
+    // Check letter keys a-z
+    for (char c = 'a'; c <= 'z'; c++) {
+      if (isKeyPressed(c) && !prevKeyState[(unsigned char)c]) {
+        if (nameIndex < 49) {
+          // Check shift for uppercase
+          bool shift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+          inputName[nameIndex] = shift ? (c - 32) : c;
+          nameIndex++;
+          inputName[nameIndex] = '\0';
+        }
+      }
+      prevKeyState[(unsigned char)c] = isKeyPressed(c);
+    }
+
+    // Check digit keys 0-9
+    for (char c = '0'; c <= '9'; c++) {
+      if (isKeyPressed(c) && !prevKeyState[(unsigned char)c]) {
+        if (nameIndex < 49) {
+          inputName[nameIndex] = c;
+          nameIndex++;
+          inputName[nameIndex] = '\0';
+        }
+      }
+      prevKeyState[(unsigned char)c] = isKeyPressed(c);
+    }
+
+    // Check space key
+    if (isKeyPressed(' ') && !prevKeyState[(unsigned char)' ']) {
+      if (nameIndex < 49) {
+        inputName[nameIndex] = ' ';
+        nameIndex++;
+        inputName[nameIndex] = '\0';
+      }
+    }
+    prevKeyState[(unsigned char)' '] = isKeyPressed(' ');
+  }
+
+  // ========== SCOREBOARD NAVIGATION ==========
+  if (currentGameState == STATE_SCOREBOARD) {
+    // Esc (27) or Backspace (8) to return
+    if ((isKeyPressed(27) && !prevKeyState[27]) || (isKeyPressed(8) && !prevKeyState[8])) {
+      currentGameState = STATE_MAIN_MENU;
+    }
+    prevKeyState[27] = isKeyPressed(27);
+    prevKeyState[8] = isKeyPressed(8);
+  }
+
   if (currentGameState == STATE_GAMEPLAY) {
 
     for (int i = 0; i < noOfObj; i++) {
@@ -701,6 +859,12 @@ void fixedUpdate() {
   if (hero.isDead) {
     rageDeaths++;
 
+    // Update global player death count and save
+    if (currentPlayerIndex >= 0 && currentPlayerIndex < totalPlayers) {
+      allPlayers[currentPlayerIndex].deaths++;
+      saveGameData();
+    }
+
     if (rageDeaths >= RAGE_MAX) {
       // Rage meter full — reset to sublevel 1 of current level
       rageDeaths = 0;
@@ -790,6 +954,7 @@ int main() {
   glutKeyboardFunc(myKeyboard);
 
   initImages();
+  loadGameData(); // Load player stats from text file on startup
   levelDefining();
 
   iSetTimer(30, changeSawbladeFrame); // Animate sawblade nicely
