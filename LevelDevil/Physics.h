@@ -102,8 +102,8 @@ void colisionDeal(Player &hero) {
 
   // --- Pass 2: Spikes, Doors, Moving Traps (original logic, unchanged) ---
   for (int i = 0; i < noOfObj; i++) {
-    if (obj[i].type == 2 || obj[i].type == 4)
-      continue; // already handled above or fake platform
+    if (obj[i].type == 2 || obj[i].type == 4 || obj[i].type == 6)
+      continue; // already handled above, or fake platform, or fake door
 
     if (checkAABB(hero.x, hero.y, 40, 50, obj[i].x, obj[i].y, obj[i].width,
                   obj[i].height)) {
@@ -189,7 +189,11 @@ void triggerTrap(GameObject &trap, Player &hero) {
     return; // Ghosts don't use standard trap logic
   }
 
-  // Standard moving traps (Sawblades, etc)
+  // Standard moving traps (Sawblades, Platforms, Doors)
+  // Store old position to calculate delta
+  double oldX = trap.x;
+  double oldY = trap.y;
+
   // Check if the hero has passed the trigger line
   if (hero.x > trap.trigX) {
     // 0 = X only, 1 = Y only, 2 = Both
@@ -215,6 +219,23 @@ void triggerTrap(GameObject &trap, Player &hero) {
         if (trap.y < trap.finY)
           trap.y = trap.finY;
       }
+    }
+  }
+
+  // PLATFORM CARRY LOGIC
+  // If the trap actually moved this frame...
+  double deltaX = trap.x - oldX;
+  double deltaY = trap.y - oldY;
+
+  if (deltaX != 0 || deltaY != 0) {
+    // Check if the player is currently standing on THIS specific trap
+    // We confirm this if onObj is true, and the player is resting on this trap's top edge
+    // hero.dy == 0 indicates they are resting.
+    if (onObj && hero.dy == 0 && (hero.y >= trap.y + trap.height - 5) && 
+        (hero.x + 45 > trap.x && hero.x + 5 < trap.x + trap.width)) {
+      
+      hero.x += deltaX;
+      hero.y += deltaY; // Move vertical as well (e.g., elevators)
     }
   }
 }

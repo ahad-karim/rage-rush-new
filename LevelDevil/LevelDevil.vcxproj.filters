@@ -51,6 +51,12 @@
     <ClInclude Include="Levelthree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Levelfive.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Levelfour.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="Glaux.lib">
@@ -78,5 +84,10 @@
     <ClCompile Include="iMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="savegame.txt">
+      <Filter>Header Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

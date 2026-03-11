@@ -6,6 +6,12 @@
 #include "Levelthree.h"
 #include "Leveltwo.h"
 #include "Levelfour.h"
+#include "Levelfive.h"
+
+int noOfObjLevel5 = 0; // Updated by Levelfive.h dynamically
+int obstacleHeightLevel5 = 20;
+int subLevelCount5 = 1;
+GameObject objLevel5[50];
 
 
 int noOfObj;
@@ -59,6 +65,15 @@ void levelDefining() {
       obj[i] = objLevel4[i];
     }
   } else if (levelCount == 5) {
+    Level levelObj; // Need an instance to pass in
+    levelfive(levelObj);
+    subLevelCount = &subLevelCount5;
+    noOfObj = levelObj.objectCount;
+    obstacleHeight = obstacleHeightLevel5;
+    for (int i = 0; i < noOfObj; i++) {
+      obj[i] = levelObj.objects[i];
+    }
+  } else if (levelCount == 6) {
     currentGameState = STATE_WIN;
   }
   printf("Trigered\n");

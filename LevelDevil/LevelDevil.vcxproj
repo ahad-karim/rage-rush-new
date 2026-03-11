@@ -71,6 +71,8 @@
     <ClInclude Include="iGraphics.h" />
     <ClInclude Include="Images.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="Levelfive.h" />
+    <ClInclude Include="Levelfour.h" />
     <ClInclude Include="Levelone.h" />
     <ClInclude Include="Levelthree.h" />
     <ClInclude Include="Leveltwo.h" />
@@ -89,6 +91,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="iMain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="savegame.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

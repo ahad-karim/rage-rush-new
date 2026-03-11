@@ -21,6 +21,7 @@ int imageLoop = 0;
 
 // Debounce array for name input key polling
 bool prevKeyState[256] = {false};
+bool hasSelectedPlayer = false; // Tracks if a player was chosen for 'Continue' 
 bool isLeft = false;
 int doi = 545;
 int screenWidth = glutGet(GLUT_SCREEN_WIDTH);
@@ -187,6 +188,83 @@ void iDraw() {
     iText(380 * rw, 50 * rh, "Press ESC or BACKSPACE to return", GLUT_BITMAP_HELVETICA_18);
   }
 
+  // ========== PLAYER SELECTION SCREEN (CONTINUE) ==========
+  else if (currentGameState == STATE_CONTINUE) {
+    // 1. Draw menu background
+    iShowImage(0, 0, screenWidth, screenHeight, menubg);
+
+    // 2. Dark overlay for readability
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.75f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0);
+    glVertex2f(screenWidth, 0);
+    glVertex2f(screenWidth, screenHeight);
+    glVertex2f(0, screenHeight);
+    glEnd();
+    glDisable(GL_BLEND);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // 3. Header text
+    iSetColor(100, 200, 255);
+    iText(420 * rw, 500 * rh, "SELECT A PLAYER", GLUT_BITMAP_TIMES_ROMAN_24);
+
+    // 4. Table Headers
+    iSetColor(200, 200, 200);
+    iText(200 * rw, 440 * rh, "NAME", GLUT_BITMAP_HELVETICA_18);
+    iText(500 * rw, 440 * rh, "LEVEL REACHED", GLUT_BITMAP_HELVETICA_18);
+    iText(800 * rw, 440 * rh, "DEATHS", GLUT_BITMAP_HELVETICA_18);
+
+    // 5. Lines separator
+    iSetColor(100, 100, 100);
+    iLine(180 * rw, 430 * rh, 900 * rw, 430 * rh);
+
+    // 6. Draw Player Data (Clickable Rows)
+    double startY = 390 * rh;
+    double gapY = 30 * rh;
+    double rowHeight = 25 * rh;
+    int displayLimit = (totalPlayers > 12) ? 12 : totalPlayers;
+
+    if (totalPlayers == 0) {
+      iSetColor(150, 150, 150);
+      iText(400 * rw, 350 * rh, "No players registered yet.", GLUT_BITMAP_HELVETICA_18);
+    } else {
+      for (int i = 0; i < displayLimit; i++) {
+        double currentY = startY - (i * gapY);
+        
+        // Hover effect for row
+        bool isHovering = (mouseX >= 180 * rw && mouseX <= 900 * rw && 
+                           mouseY >= currentY - 5 * rh && mouseY <= currentY + rowHeight - 5 * rh);
+        
+        if (isHovering) {
+          iSetColor(50, 50, 50); // Highlight background
+          iFilledRectangle(180 * rw, currentY - 5 * rh, 720 * rw, rowHeight);
+          iSetColor(255, 255, 100); // Yellow text on hover
+        } else {
+          iSetColor(255, 255, 255); // White text normally
+        }
+
+        // Name
+        iText(200 * rw, currentY, allPlayers[i].name, GLUT_BITMAP_HELVETICA_18);
+        
+        // Level
+        char lvlStr[10];
+        sprintf_s(lvlStr, sizeof(lvlStr), "%d", allPlayers[i].level);
+        iText(550 * rw, currentY, lvlStr, GLUT_BITMAP_HELVETICA_18);
+        
+        // Deaths
+        char dthStr[10];
+        sprintf_s(dthStr, sizeof(dthStr), "%d", allPlayers[i].deaths);
+        iText(820 * rw, currentY, dthStr, GLUT_BITMAP_HELVETICA_18);
+      }
+    }
+
+    // 7. Return Instructions
+    iSetColor(150, 150, 150);
+    iText(430 * rw, 50 * rh, "Press ESC to return", GLUT_BITMAP_HELVETICA_18);
+  }
+
   else if (currentGameState == STATE_GAMEPLAY) {
     
 
@@ -208,6 +286,10 @@ void iDraw() {
 	else if (levelCount == 4) {
 		iShowImage(0, 0, screenWidth, screenHeight, l4bg[*subLevelCount - 1]);
 		iText(470 * rw, 550 * rh, "DARKNESS", GLUT_BITMAP_HELVETICA_18);
+	}
+	else if (levelCount == 5) {
+		iShowImage(0, 0, screenWidth, screenHeight, l1bg[*subLevelCount - 1]); // Reuse l1bg for Level 5
+		iText(470 * rw, 550 * rh, "DECEPTION", GLUT_BITMAP_HELVETICA_18);
 	}
       
 
@@ -482,20 +564,24 @@ void iMouse(int button, int state, int mx, int my) {
 
       // Continue button (X: 430 to 650, Y: 90 to 160)
       if (mx >= 430 * rw && mx <= 650 * rw && my >= 90 * rh && my <= 160 * rh) {
-        // Resume from the current level/sublevel (don't reset counters)
-        levelDefining();
-        hero.isDead = false;
-        hero.isDying = false;
-        currentImage = staticChar;
-        hero.x = 0;
-        hero.y = obstacleHeight;
-        imageLoop = 0;
-        levelDone = false;
-        for (int i = 0; i < noOfObj; i++) {
-          obj[i].x = obj[i].innitialX;
-          obj[i].y = obj[i].innitialY;
+        if (!hasSelectedPlayer) {
+          currentGameState = STATE_CONTINUE;
+        } else {
+          // Resume from the current level/sublevel (don't reset counters)
+          levelDefining();
+          hero.isDead = false;
+          hero.isDying = false;
+          currentImage = staticChar;
+          hero.x = 0;
+          hero.y = obstacleHeight;
+          imageLoop = 0;
+          levelDone = false;
+          for (int i = 0; i < noOfObj; i++) {
+            obj[i].x = obj[i].innitialX;
+            obj[i].y = obj[i].innitialY;
+          }
+          currentGameState = STATE_GAMEPLAY;
         }
-        currentGameState = STATE_GAMEPLAY;
       }
 
       // Scores button (X: 460 to 620, Y: 10 to 80)
@@ -525,6 +611,52 @@ void iMouse(int button, int state, int mx, int my) {
       if (mx >= 980 * rw && mx <= 1050 * rw && my >= 30 * rh &&
           my <= 100 * rh) {
         currentGameState = STATE_LEVEL_SELECT;
+      }
+    }
+    // ========== PLAYER SELECTION CLICK HANDLING ==========
+    else if (currentGameState == STATE_CONTINUE) {
+      double startY = 390 * rh;
+      double gapY = 30 * rh;
+      double rowHeight = 25 * rh;
+      int displayLimit = (totalPlayers > 12) ? 12 : totalPlayers;
+
+      // Check if clicked inside the list bounds
+      if (mx >= 180 * rw && mx <= 900 * rw) {
+        for (int i = 0; i < displayLimit; i++) {
+          double currentY = startY - (i * gapY);
+          if (my >= currentY - 5 * rh && my <= currentY + rowHeight - 5 * rh) {
+            // Player Selected!
+            currentPlayerIndex = i;
+            
+            // Load their saved stats
+            levelCount = allPlayers[i].level;
+            rageDeaths = allPlayers[i].deaths;
+            
+            // Ensure they start at sublevel 1 of their saved level
+            if (levelCount == 1) subLevelCount1 = 1;
+            else if (levelCount == 2) subLevelCount2 = 1;
+            else if (levelCount == 3) subLevelCount3 = 1;
+            else if (levelCount == 4) subLevelCount4 = 1;
+
+            hasSelectedPlayer = true;
+            
+            // Initialize Gameplay
+            levelDefining();
+            hero.isDead = false;
+            hero.isDying = false;
+            currentImage = staticChar;
+            hero.x = 0;
+            hero.y = obstacleHeight;
+            imageLoop = 0;
+            levelDone = false;
+            for (int j = 0; j < noOfObj; j++) {
+              obj[j].x = obj[j].innitialX;
+              obj[j].y = obj[j].innitialY;
+            }
+            currentGameState = STATE_GAMEPLAY;
+            break; // Stop checking rows
+          }
+        }
       }
     }
     // ========== LEVEL SELECT CLICK HANDLING ==========
@@ -712,6 +844,15 @@ void fixedUpdate() {
     }
     prevKeyState[27] = isKeyPressed(27);
     prevKeyState[8] = isKeyPressed(8);
+  }
+
+  // ========== PLAYER SELECTION NAVIGATION ==========
+  if (currentGameState == STATE_CONTINUE) {
+    // Esc to cancel and return to menu
+    if (isKeyPressed(27) && !prevKeyState[27]) {
+      currentGameState = STATE_MAIN_MENU;
+    }
+    prevKeyState[27] = isKeyPressed(27);
   }
 
   if (currentGameState == STATE_GAMEPLAY) {

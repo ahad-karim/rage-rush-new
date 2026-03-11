@@ -51,7 +51,7 @@ double gravity = -1; // Pulls the player down every frame
 struct GameObject {
   double x, y;
   double width, height;
-  int type; // 0=Spike, 1=Door, 2=Platform, 3=Sawblade, 4=Fake Platform, 5=Ghost
+  int type; // 0=Spike, 1=Door, 2=Platform, 3=Sawblade, 4=Fake Platform, 5=Ghost, 6=Fake Door
   int state; // 0=Normal, 1=Triggered/Falling
   bool isVisible;
   bool willKill;

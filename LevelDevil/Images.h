@@ -24,9 +24,9 @@ int l2bg[4];
 int l3bg[4];
 int l4bg[4];
 
-int objImg[6] = {
+int objImg[7] = {
     spikes1,  door,     platform,
-    sawblade, platform, ghostImg}; // Index 4 mapped to platform, 5 to ghostImg
+    sawblade, platform, ghostImg, door}; // Index 4 mapped to platform, 5 to ghostImg, 6 to door
 int sublevelbgArray[4];
 
 void initImages() {
@@ -80,11 +80,11 @@ void initImages() {
   l3bg[2] = iLoadImage("Images//l3s3bg.png");
   l3bg[3] = iLoadImage("Images//l3s4bg.png");
 
-  // Level 4 backgrounds (reuse sublevel backgrounds since level is dark)
-  l4bg[0] = sublevel1bg;
-  l4bg[1] = sublevel2bg;
-  l4bg[2] = sublevel3bg;
-  l4bg[3] = sublevel4bg;
+  // Level 4 backgrounds
+  l4bg[0] = iLoadImage("Images//l4s1bg.png");
+  l4bg[1] = iLoadImage("Images//l4s2bg.png");
+  l4bg[2] = iLoadImage("Images//l4s3bg.png");
+  l4bg[3] = iLoadImage("Images//l4s4bg.png");
 
 
   int idx = 0;
