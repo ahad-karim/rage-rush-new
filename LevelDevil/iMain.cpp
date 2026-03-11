@@ -431,24 +431,36 @@ void iDraw() {
     iText(410 * rw, 500 * rh, "SELECT LEVEL", GLUT_BITMAP_TIMES_ROMAN_24);
     iSetColor(255, 255, 255);
 
-    // 4. Level buttons (centered row, square)
-    double btnSize = 150 * rw;
-    double gap = 40 * rw;
-    double totalW = 3 * btnSize + 2 * gap;
+    // 4. Level buttons (centered row)
+    double btnSize = 130 * rw;
+    double gap = 30 * rw;
+    double totalW = 5 * btnSize + 4 * gap;
     double startX = (screenWidth - totalW) / 2.0;
-    double btnY = 200 * rh;
-    double btn1X = startX;
-    double btn2X = startX + btnSize + gap;
-    double btn3X = startX + 2 * (btnSize + gap);
+    double btnY = 250 * rh;
 
-    // Level 1
-    iShowImage(btn1X, btnY, btnSize, btnSize, level1Img);
+    for (int i = 1; i <= 5; i++) {
+        double currentX = startX + (i - 1) * (btnSize + gap);
+        
+        bool isHovering = (mouseX >= currentX && mouseX <= currentX + btnSize &&
+                           mouseY >= btnY && mouseY <= btnY + btnSize);
 
-    // Level 2
-    iShowImage(btn2X, btnY, btnSize, btnSize, level2Img);
+        if (isHovering) {
+            iSetColor(50, 50, 50); // Dark gray hover background
+            iFilledRectangle(currentX, btnY, btnSize, btnSize);
+            iSetColor(255, 255, 100); // Yellow border and text
+            iRectangle(currentX, btnY, btnSize, btnSize);
+        } else {
+            iSetColor(30, 30, 30); // Very dark gray normal background
+            iFilledRectangle(currentX, btnY, btnSize, btnSize);
+            iSetColor(150, 150, 150); // Gray border and text
+            iRectangle(currentX, btnY, btnSize, btnSize);
+        }
 
-    // Level 3
-    iShowImage(btn3X, btnY, btnSize, btnSize, level3Img);
+        char lvlStr[20];
+        sprintf_s(lvlStr, sizeof(lvlStr), "LEVEL %d", i);
+        // Center text roughly
+        iText(currentX + 30 * rw, btnY + 55 * rh, lvlStr, GLUT_BITMAP_HELVETICA_18);
+    }
 
     // 5. Back button (text at bottom)
     bool hovBack = (mouseX >= 480 * rw && mouseX <= 600 * rw &&
@@ -661,61 +673,34 @@ void iMouse(int button, int state, int mx, int my) {
     }
     // ========== LEVEL SELECT CLICK HANDLING ==========
     else if (currentGameState == STATE_LEVEL_SELECT) {
-      double btnSize = 150 * rw;
-      double gap = 40 * rw;
-      double totalW = 3 * btnSize + 2 * gap;
+      double btnSize = 130 * rw;
+      double gap = 30 * rw;
+      double totalW = 5 * btnSize + 4 * gap;
       double startX = (screenWidth - totalW) / 2.0;
-      double btnY = 200 * rh;
-      double btn1X = startX;
-      double btn2X = startX + btnSize + gap;
-      double btn3X = startX + 2 * (btnSize + gap);
+      double btnY = 250 * rh;
+      
+      bool levelClicked = false;
+      int clickedLevel = 0;
 
-      // Level 1 click
-      if (mx >= btn1X && mx <= btn1X + btnSize && my >= btnY &&
-          my <= btnY + btnSize) {
-        levelCount = 1;
-        rageDeaths = 0;
-        subLevelCount1 = 1;
-        levelDone = false;
-        levelDefining();
-        hero.isDead = false;
-        hero.isDying = false;
-        currentImage = staticChar;
-        hero.x = 0;
-        hero.y = obstacleHeight;
-        imageLoop = 0;
-        for (int i = 0; i < noOfObj; i++) {
-          obj[i].x = obj[i].innitialX;
-          obj[i].y = obj[i].innitialY;
+      for (int i = 1; i <= 5; i++) {
+        double currentX = startX + (i - 1) * (btnSize + gap);
+        if (mx >= currentX && mx <= currentX + btnSize && my >= btnY && my <= btnY + btnSize) {
+            levelClicked = true;
+            clickedLevel = i;
+            break;
         }
-        currentGameState = STATE_GAMEPLAY;
       }
-      // Level 2 click
-      else if (mx >= btn2X && mx <= btn2X + btnSize && my >= btnY &&
-               my <= btnY + btnSize) {
-        levelCount = 2;
+
+      if (levelClicked) {
+        levelCount = clickedLevel;
         rageDeaths = 0;
-        subLevelCount2 = 1;
-        levelDone = false;
-        levelDefining();
-        hero.isDead = false;
-        hero.isDying = false;
-        currentImage = staticChar;
-        hero.x = 0;
-        hero.y = obstacleHeight;
-        imageLoop = 0;
-        for (int i = 0; i < noOfObj; i++) {
-          obj[i].x = obj[i].innitialX;
-          obj[i].y = obj[i].innitialY;
-        }
-        currentGameState = STATE_GAMEPLAY;
-      }
-      // Level 3 click
-      else if (mx >= btn3X && mx <= btn3X + btnSize && my >= btnY &&
-               my <= btnY + btnSize) {
-        levelCount = 3;
-        rageDeaths = 0;
-        subLevelCount3 = 1;
+        
+        if (levelCount == 1) subLevelCount1 = 1;
+        else if (levelCount == 2) subLevelCount2 = 1;
+        else if (levelCount == 3) subLevelCount3 = 1;
+        else if (levelCount == 4) subLevelCount4 = 1;
+        else if (levelCount == 5) subLevelCount5 = 1;
+        
         levelDone = false;
         levelDefining();
         hero.isDead = false;
