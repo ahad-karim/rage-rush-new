@@ -288,8 +288,8 @@ void iDraw() {
 		iText(470 * rw, 550 * rh, "DARKNESS", GLUT_BITMAP_HELVETICA_18);
 	}
 	else if (levelCount == 5) {
-		iShowImage(0, 0, screenWidth, screenHeight, l1bg[*subLevelCount - 1]); // Reuse l1bg for Level 5
-		iText(470 * rw, 550 * rh, "DECEPTION", GLUT_BITMAP_HELVETICA_18);
+		iShowImage(0, 0, screenWidth, screenHeight, l5bg[*subLevelCount - 1]);
+		iText(430 * rw, 550 * rh, "MOVING MADNESS", GLUT_BITMAP_HELVETICA_18);
 	}
       
 
@@ -322,6 +322,11 @@ void iDraw() {
 
     // Hero: Standard 50x50 scaled
     iShowImage(hero.x * rw, hero.y * rh, 50 * rw, 50 * rh, currentImage);
+
+    // Shield overlay — drawn on top of hero while active
+    if (shieldActive) {
+      iShowImage((hero.x - 5) * rw, (hero.y - 5) * rh, 60 * rw, 60 * rh, shieldImg);
+    }
 
     if (hero.isDead) {
       iText(470 * rw, 250 * rh, "Game Over", GLUT_BITMAP_TIMES_ROMAN_24);
@@ -841,6 +846,14 @@ void fixedUpdate() {
   }
 
   if (currentGameState == STATE_GAMEPLAY) {
+
+    // Shield timer: deactivate after 5 seconds
+    if (shieldActive) {
+      double elapsed = (double)(clock() - shieldStartTime) / CLOCKS_PER_SEC;
+      if (elapsed >= 5.0) {
+        shieldActive = false;
+      }
+    }
 
     for (int i = 0; i < noOfObj; i++) {
       triggerTrap(obj[i], hero);

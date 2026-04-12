@@ -22,10 +22,12 @@ int l1bg[4];
 int l2bg[4];
 int l3bg[4];
 int l4bg[4];
+int l5bg[4];
+int orbImg, shieldImg;
 
-int objImg[7] = {
+int objImg[8] = {
     spikes1,  door,     platform,
-    sawblade, platform, ghostImg, door}; // Index 4 mapped to platform, 5 to ghostImg, 6 to door
+    sawblade, platform, ghostImg, door, 0}; // 7=Orb
 int sublevelbgArray[4];
 
 void initImages() {
@@ -80,6 +82,16 @@ void initImages() {
   l4bg[1] = iLoadImage("Images//l4s2bg.png");
   l4bg[2] = iLoadImage("Images//l4s3bg.png");
   l4bg[3] = iLoadImage("Images//l4s4bg.png");
+
+  // Level 5 backgrounds
+  l5bg[0] = iLoadImage("Images//l5s1bg.png");
+  l5bg[1] = iLoadImage("Images//l5s2bg.png");
+  l5bg[2] = iLoadImage("Images//l5s3bg.png");
+  l5bg[3] = iLoadImage("Images//l5s4bg.png");
+
+  // Orb and Shield
+  orbImg   = iLoadImage("Images//orb.png");
+  shieldImg = iLoadImage("Images//shield.png");
 
 
   int idx = 0;
@@ -166,6 +178,8 @@ void initImages() {
 
   ghostImg = iLoadImage("Images//ghost.png");
   objImg[5] = ghostImg;
+  objImg[6] = iLoadImage("Images//door.png");
+  objImg[7] = orbImg;
 
   sublevelbgArray[0] = sublevel1bg;
   sublevelbgArray[1] = sublevel2bg;

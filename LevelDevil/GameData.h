@@ -2,10 +2,15 @@
 #define GAMEDATA_H
 
 #include <string>
+#include <time.h>
 #include <vector>
 
 int levelCount = 4;
 int rageDeaths = 0;
+
+// Shield / Orb mechanic
+bool shieldActive = false;
+clock_t shieldStartTime = 0;
 #define RAGE_MAX 11
 
 struct PlayerData {
@@ -51,7 +56,7 @@ double gravity = -1; // Pulls the player down every frame
 struct GameObject {
   double x, y;
   double width, height;
-  int type; // 0=Spike, 1=Door, 2=Platform, 3=Sawblade, 4=Fake Platform, 5=Ghost, 6=Fake Door
+  int type; // 0=Spike, 1=Door, 2=Platform, 3=Sawblade, 4=Fake Platform, 5=Ghost, 6=Fake Door, 7=Orb
   int state; // 0=Normal, 1=Triggered/Falling
   bool isVisible;
   bool willKill;
