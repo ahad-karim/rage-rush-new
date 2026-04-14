@@ -13,6 +13,15 @@ bool shieldActive = false;
 clock_t shieldStartTime = 0;
 #define RAGE_MAX 11
 
+// Story state
+int storyPart = 0;          // 0,1,2  = which of the 3 parts
+int storyPhase = 0;         // 0 = typewriter text, 1 = image display
+double storyTimer = 0.0;    // seconds elapsed in current phase
+int storyCharsShown = 0;    // how many characters of text are visible
+clock_t storyLastTick = 0;  // for delta-time calculation
+bool storyAudioPlaying = false;
+int storyAudioAction = 0;   // 0=idle, 1=open+play, 2=stop+close, 3=reopen bgsong
+
 struct PlayerData {
   char name[50];
   int level;
@@ -21,14 +30,15 @@ struct PlayerData {
 
 // Define the possible states of your game
 enum GameState {
-  STATE_MAIN_MENU,  // 0
-  STATE_ENTER_NAME, // 1
-  STATE_CONTINUE,   // 2
-  STATE_SCOREBOARD, // 3
-  STATE_GAMEPLAY,   // 4
-  STATE_WIN,
-  STATE_GAME_OVER,
-  STATE_LEVEL_SELECT // 7
+  STATE_MAIN_MENU,   // 0
+  STATE_ENTER_NAME,  // 1
+  STATE_CONTINUE,    // 2
+  STATE_SCOREBOARD,  // 3
+  STATE_GAMEPLAY,    // 4
+  STATE_WIN,         // 5
+  STATE_GAME_OVER,   // 6
+  STATE_LEVEL_SELECT,// 7
+  STATE_STORY        // 8
 };
 
 // This is the actual variable that tracks which state we are in

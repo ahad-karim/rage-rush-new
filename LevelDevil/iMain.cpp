@@ -30,6 +30,7 @@ int mouseX = 0, mouseY = 0;
 
 // Do not remove this line!!!!!!
 GameState currentGameState = STATE_MAIN_MENU;
+int currentStoryAudioState = -1;
 Player hero = {0, obstacleHeight, 5, 15, false, false, 40, 40, false};
 
 void iDraw() {
@@ -406,11 +407,127 @@ void iDraw() {
     iText(meterX, meterY + meterH + 5 * rh, "RAGE", GLUT_BITMAP_HELVETICA_18);
   }
 
-  // ... Repeat for WIN and GAME_OVER states ...
+  // ... WIN and GAME_OVER states ...
   else if (currentGameState == STATE_WIN) {
-    iShowImage(0, 0, screenWidth, screenHeight, win);
+    iShowImage(0, 0, screenWidth, screenHeight, intro4);
   } else if (currentGameState == STATE_GAME_OVER) {
     iShowImage(0, 0, screenWidth, screenHeight, gameover);
+  }
+
+  // ========== STORY SCREEN ==========
+  else if (currentGameState == STATE_STORY) {
+    // Black background
+    iSetColor(0, 0, 0);
+    iFilledRectangle(0, 0, screenWidth, screenHeight);
+
+    // ---- Story text data ----
+    // Part 0 text (two lines)
+    static const char* storyLines[3][5] = {
+      {
+        "The world was still bright. I stepped onto the university bus as usual,",
+        "backpack heavy, head full of plans. I didn't even look twice at the driver.",
+        "I just wanted to attend classes as usual.",
+        NULL, NULL
+      },
+      {
+        "Time slowed down. The roar of the train was deafening - a wall of blue and yellow steel",
+        "screaming across the tracks. The bus felt like paper. Shattering glass,",
+        "the smell of burning oil, and a crushing weight.",
+        "That was the last thing I remember.",
+        NULL
+      },
+      {
+        "Cold. That's what woke me up. I wasn't on the bus anymore.",
+        "I wasn't on the tracks. I opened my eyes to a ceiling of rusted pipes and shadows.",
+        "My head throbbed, and the air tasted like copper and old machinery.",
+        "\"Where am I...?\" I'm alive, but I'm not home.",
+        "I don't know this place, but the heavy iron door in front of me is the only way out. It's time to move."
+      }
+    };
+    static const int storyLineCount[3] = {3, 4, 5};
+
+    // Audio durations (seconds) — measured from actual mp3s
+    static const double storyDuration[3] = {13.636, 17.162, 26.331};
+
+    // Story images
+    static int storyImg[3];
+    storyImg[0] = intro1; storyImg[1] = intro2; storyImg[2] = intro3;
+
+    if (storyPhase == 0) {
+      // --- Typewriter phase ---
+      // Build a single concatenated string from the lines
+      char fullText[1024] = "";
+      for (int li = 0; li < storyLineCount[storyPart]; li++) {
+        if (li > 0) strcat_s(fullText, sizeof(fullText), "\n");
+        strcat_s(fullText, sizeof(fullText), storyLines[storyPart][li]);
+      }
+      int totalChars = (int)strlen(fullText);
+
+      // Render each line up to storyCharsShown total chars
+      int charsLeft = storyCharsShown;
+      double lineSpacing = 32 * rh;
+      double startY = screenHeight / 2.0 + (storyLineCount[storyPart] - 1) * lineSpacing / 2.0;
+
+      iSetColor(220, 220, 220);
+      for (int li = 0; li < storyLineCount[storyPart] && charsLeft > 0; li++) {
+        int lineLen = (int)strlen(storyLines[storyPart][li]);
+        int showLen = charsLeft < lineLen ? charsLeft : lineLen;
+
+        char buf[300] = "";
+        strncpy_s(buf, sizeof(buf), storyLines[storyPart][li], showLen);
+        buf[showLen] = '\0';
+
+        // Center the line horizontally
+        double textWidth = showLen * 9.0 * rw;
+        double lineX = (screenWidth - textWidth) / 2.0;
+        iText(lineX, startY - li * lineSpacing, buf, GLUT_BITMAP_9_BY_15);
+
+        charsLeft -= lineLen;
+      }
+
+      // Blinking cursor after last shown character
+      if (storyCharsShown < totalChars) {
+        iSetColor(180, 180, 180);
+        iText(screenWidth / 2.0, 60 * rh, "_", GLUT_BITMAP_9_BY_15);
+      }
+
+    } else if (storyPhase == 1) {
+      // --- Hold phase: full text stays on screen for 1.5s ---
+      double lineSpacing = 32 * rh;
+      double startY = screenHeight / 2.0 + (storyLineCount[storyPart] - 1) * lineSpacing / 2.0;
+
+      iSetColor(220, 220, 220);
+      for (int li = 0; li < storyLineCount[storyPart]; li++) {
+        if (!storyLines[storyPart][li]) break;
+        int lineLen = (int)strlen(storyLines[storyPart][li]);
+        double textWidth = lineLen * 9.0 * rw;
+        double lineX = (screenWidth - textWidth) / 2.0;
+        iText(lineX, startY - li * lineSpacing,
+              const_cast<char*>(storyLines[storyPart][li]), GLUT_BITMAP_9_BY_15);
+      }
+
+    } else {
+      // --- Image phase (storyPhase == 2): fade in and hold ---
+      double fadeT = storyTimer / 0.5; // 0.5s fade-in
+      if (fadeT > 1.0) fadeT = 1.0;
+
+      iShowImage(0, 0, screenWidth, screenHeight, storyImg[storyPart]);
+
+      // Dim overlay fades out (start fully black, clear to transparent)
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glColor4f(0.0f, 0.0f, 0.0f, (float)(1.0 - fadeT));
+      glBegin(GL_QUADS);
+        glVertex2f(0, 0); glVertex2f(screenWidth, 0);
+        glVertex2f(screenWidth, screenHeight); glVertex2f(0, screenHeight);
+      glEnd();
+      glDisable(GL_BLEND);
+      glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+      // "Skip" hint
+      iSetColor(120, 120, 120);
+      iText(20 * rw, 20 * rh, "Press SPACE to skip", GLUT_BITMAP_HELVETICA_12);
+    }
   }
 
   // ========== LEVEL SELECT PAGE ==========
@@ -596,6 +713,7 @@ void iMouse(int button, int state, int mx, int my) {
           for (int i = 0; i < noOfObj; i++) {
             obj[i].x = obj[i].innitialX;
             obj[i].y = obj[i].innitialY;
+            obj[i].state = 0; // reset ping-pong direction
           }
           currentGameState = STATE_GAMEPLAY;
         }
@@ -609,19 +727,12 @@ void iMouse(int button, int state, int mx, int my) {
       // changing volume (X: 30 to 100, Y: 30 to 100)
       if (mx >= 30 * rw && mx <= 100 * rw && my >= 30 * rh && my <= 100 * rh) {
         vol = !vol;
-        // Opening/Loading the audio files
-        mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0,
-                      NULL);
-        // mciSendString("open \"Audios//gameover.mp3\" alias ggsong", NULL, 0,
-        // NULL);
-
-        // mciSendString("close ggsong", NULL, 0, NULL);
+        // Volume button: close first to handle any state, then reopen and play/stop
+        mciSendString("stop bgsong", NULL, 0, NULL);
+        mciSendString("close bgsong", NULL, 0, NULL);
+        mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0, NULL);
         if (vol) {
-          // Playing the background audio on repeat
           mciSendString("play bgsong repeat", NULL, 0, NULL);
-        } else {
-          // If the use of an audio is finished, close it to free memory
-          mciSendString("stop bgsong", NULL, 0, NULL);
         }
       }
       // Levels button click (X: 980 to 1050, Y: 30 to 100)
@@ -669,6 +780,7 @@ void iMouse(int button, int state, int mx, int my) {
             for (int j = 0; j < noOfObj; j++) {
               obj[j].x = obj[j].innitialX;
               obj[j].y = obj[j].innitialY;
+              obj[j].state = 0; // reset ping-pong direction
             }
             currentGameState = STATE_GAMEPLAY;
             break; // Stop checking rows
@@ -717,6 +829,7 @@ void iMouse(int button, int state, int mx, int my) {
         for (int i = 0; i < noOfObj; i++) {
           obj[i].x = obj[i].innitialX;
           obj[i].y = obj[i].innitialY;
+          obj[i].state = 0; // reset ping-pong direction
         }
         currentGameState = STATE_GAMEPLAY;
       }
@@ -758,22 +871,23 @@ void fixedUpdate() {
       if (nameIndex > 0) {
         registerNewPlayer(inputName);
 
-        hero.isDead = false;
-        hero.isDying = false;
-        currentImage = staticChar;
-        hero.x = 0;
-        hero.y = obstacleHeight;
-        imageLoop = 0;
-        levelDone = false;
-        levelCount = 1;
-        rageDeaths = 0;
-        subLevelCount1 = 1;
-        levelDefining();
-        for (int i = 0; i < noOfObj; i++) {
-          obj[i].x = obj[i].innitialX;
-          obj[i].y = obj[i].innitialY;
-        }
-        currentGameState = STATE_GAMEPLAY;
+        // Stop background music (keep the device open so the manager can seek+replay it later)
+        mciSendString("stop bgsong", NULL, 0, NULL);
+        // Reset the audio manager's tracking so it always re-evaluates on next fire
+        currentStoryAudioState = -1;
+
+        // Launch story
+        storyPart = 0;
+        storyPhase = 0;
+        storyTimer = 0.0;
+        storyCharsShown = 0;
+        storyLastTick = clock();
+
+        // Signal the audio manager to open + play part 0
+        storyAudioAction = 1;
+        storyAudioPlaying = false;
+
+        currentGameState = STATE_STORY;
         nameIndex = 0;
         inputName[0] = '\0';
       }
@@ -845,6 +959,116 @@ void fixedUpdate() {
     prevKeyState[27] = isKeyPressed(27);
   }
 
+  // ========== STORY UPDATE ==========
+  if (currentGameState == STATE_STORY) {
+
+    // Per-part data
+    static const double storyDuration[3] = {14.636, 18.162, 27.331};
+    static const int storyLineCount[3] = {3, 4, 5};
+
+    static const char* storyLines[3][5] = {
+      {
+        "The world was still bright. I stepped onto the university bus as usual,",
+        "backpack heavy, head full of plans. I didn't even look twice at the driver.",
+        "I just wanted to attend classes as usual.",
+        NULL, NULL
+      },
+      {
+        "Time slowed down. The roar of the train was deafening - a wall of blue and yellow steel",
+        "screaming across the tracks. The bus felt like paper. Shattering glass,",
+        "the smell of burning oil, and a crushing weight.",
+        "That was the last thing I remember.",
+        NULL
+      },
+      {
+        "Cold. That's what woke me up. I wasn't on the bus anymore.",
+        "I wasn't on the tracks. I opened my eyes to a ceiling of rusted pipes and shadows.",
+        "My head throbbed, and the air tasted like copper and old machinery.",
+        "\"Where am I...?\" I'm alive, but I'm not home.",
+        "I don't know this place, but the heavy iron door in front of me is the only way out. It's time to move."
+      }
+    };
+
+    // Compute total character count for this part
+    int totalChars = 0;
+    for (int li = 0; li < storyLineCount[storyPart]; li++) {
+      if (storyLines[storyPart][li]) totalChars += (int)strlen(storyLines[storyPart][li]);
+    }
+
+    // Delta time
+    clock_t now = clock();
+    double dt = (double)(now - storyLastTick) / CLOCKS_PER_SEC;
+    storyLastTick = now;
+    storyTimer += dt;
+
+    // SPACE key skips the current phase
+    bool spaceJustPressed = isKeyPressed(' ') && !prevKeyState[(unsigned char)' '];
+    prevKeyState[(unsigned char)' '] = isKeyPressed(' ');
+
+    if (storyPhase == 0) {
+      // --- Typewriter phase ---
+      double ratio = storyTimer / storyDuration[storyPart];
+      if (ratio > 1.0) ratio = 1.0;
+      storyCharsShown = (int)(ratio * totalChars);
+
+      // Phase ends when audio duration elapsed (or SPACE)
+      if (storyTimer >= storyDuration[storyPart] || spaceJustPressed) {
+        storyCharsShown = totalChars;
+        storyPhase = 1;       // enter 1.5s text-hold phase
+        storyTimer = 0.0;
+        // Signal audio manager: silence while text is held
+        storyAudioAction = 4;
+        storyAudioPlaying = false;
+      }
+
+    } else if (storyPhase == 1) {
+      // --- Text hold phase: full text stays visible for 1.5s ---
+      if (storyTimer >= 1.5 || spaceJustPressed) {
+        storyPhase = 2;       // enter image phase
+        storyTimer = 0.0;
+      }
+
+    } else {
+      // --- Image display phase (storyPhase == 2, 3 seconds) ---
+      if (storyTimer >= 3.0 || spaceJustPressed) {
+        if (storyPart < 2) {
+          // Advance to next part
+          storyPart++;
+          storyPhase = 0;
+          storyTimer = 0.0;
+          storyCharsShown = 0;
+          // Signal audio manager to play next part
+          storyAudioAction = storyPart + 1;
+
+        } else {
+          // Story done — signal manager to restart background music
+          // Force-reset the tracker so the manager always re-triggers action 0
+          currentStoryAudioState = -1;
+          storyAudioAction = 0;
+
+          hero.isDead = false;
+          hero.isDying = false;
+          currentImage = staticChar;
+          hero.x = 0;
+          hero.y = obstacleHeight;
+          imageLoop = 0;
+          levelDone = false;
+          levelCount = 1;
+          rageDeaths = 0;
+          subLevelCount1 = 1;
+          levelDefining();
+          for (int i = 0; i < noOfObj; i++) {
+            obj[i].x = obj[i].innitialX;
+            obj[i].y = obj[i].innitialY;
+            obj[i].state = 0; // reset ping-pong direction
+          }
+          currentGameState = STATE_GAMEPLAY;
+        }
+      }
+    }
+  }
+
+
   if (currentGameState == STATE_GAMEPLAY) {
 
     // Shield timer: deactivate after 5 seconds
@@ -856,7 +1080,15 @@ void fixedUpdate() {
     }
 
     for (int i = 0; i < noOfObj; i++) {
-      triggerTrap(obj[i], hero);
+      // Level 5 type-2 platforms use a dedicated oscillating function so
+      // they move endlessly up/down.  Every other object in every level
+      // (sawblades, doors, ghosts, and non-platform level-5 objects) still
+      // goes through the original triggerTrap – nothing there changes.
+      if (levelCount == 5 && obj[i].type == 2) {
+        triggerMovingPlatform(obj[i], hero);
+      } else {
+        triggerTrap(obj[i], hero);
+      }
     }
 
     colisionDeal(hero);
@@ -879,6 +1111,7 @@ void fixedUpdate() {
     for (int i = 0; i < noOfObj; i++) {
       obj[i].x = obj[i].innitialX;
       obj[i].y = obj[i].innitialY;
+      obj[i].state = 0; // reset ping-pong direction
     }
   }
 
@@ -974,9 +1207,9 @@ void fixedUpdate() {
     }
   }
 
-  if (isKeyPressed(' ')) {
+  // SPACE stops background music only during gameplay (not during story)
+  if (isKeyPressed(' ') && currentGameState == STATE_GAMEPLAY) {
     vol = false;
-
     mciSendString("stop bgsong", NULL, 0, NULL);
   }
   bool isMoving = (isKeyPressed('a') || isKeyPressed('d') ||
@@ -1023,6 +1256,7 @@ void fixedUpdate() {
     for (int i = 0; i < noOfObj; i++) {
       obj[i].x = obj[i].innitialX;
       obj[i].y = obj[i].innitialY;
+      obj[i].state = 0; // reset ping-pong direction
     }
   }
 
@@ -1073,30 +1307,66 @@ void changeSawbladeFrame() {
   }
 }
 
-int main() {
+// ========== STORY AUDIO MANAGER (runs on its own WM_TIMER) ==========
+// Reads the global storyAudioAction flag and performs MCI operations.
+// Actions: 0=idle/gameplay (bgsong), 1=play story1, 2=play story2, 3=play story3, 4=silence
+// Uses a close/open guard for bgsong so it always works regardless of prior state.
 
-  // Opening/Loading the audio files
-  mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0,
-                NULL);
-  // mciSendString("open \"Audios//gameover.mp3\" alias ggsong", NULL, 0, NULL);
+void storyAudioManager() {
+  if (currentStoryAudioState == storyAudioAction) return;
 
-  // mciSendString("close ggsong", NULL, 0, NULL);
-  if (vol) {
-    // Playing the background audio on repeat
-    mciSendString("play bgsong repeat", NULL, 0, NULL);
-  } else {
-    // If the use of an audio is finished, close it to free memory
+  // Stop all story tracks — these are always open so this is safe
+  mciSendString("stop story1", NULL, 0, NULL);
+  mciSendString("stop story2", NULL, 0, NULL);
+  mciSendString("stop story3", NULL, 0, NULL);
+  // Stop bgsong only if we are leaving gameplay (action was 0)
+  if (currentStoryAudioState == 0) {
     mciSendString("stop bgsong", NULL, 0, NULL);
   }
+
+  if (storyAudioAction == 0) {
+    // Returning to gameplay: reopen bgsong (close first in case it is still open)
+    mciSendString("close bgsong", NULL, 0, NULL);
+    mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0, NULL);
+    if (vol) {
+      mciSendString("play bgsong repeat", NULL, 0, NULL);
+    }
+  } else if (storyAudioAction == 1) {
+    mciSendString("seek story1 to start", NULL, 0, NULL);
+    mciSendString("play story1", NULL, 0, NULL);
+  } else if (storyAudioAction == 2) {
+    mciSendString("seek story2 to start", NULL, 0, NULL);
+    mciSendString("play story2", NULL, 0, NULL);
+  } else if (storyAudioAction == 3) {
+    mciSendString("seek story3 to start", NULL, 0, NULL);
+    mciSendString("play story3", NULL, 0, NULL);
+  } else if (storyAudioAction == 4) {
+    // Absolute silence between phases — nothing to do
+  }
+
+  currentStoryAudioState = storyAudioAction;
+}
+
+int main() {
+
+  // Opening/Loading all the audio devices in main
+  mciSendString("open \"Audios//RageRush_bgm.mp3\" alias bgsong", NULL, 0, NULL);
+  mciSendString("open \"Audios//first_part_story.mp3\" alias story1", NULL, 0, NULL);
+  mciSendString("open \"Audios//second_part_story.mp3\" alias story2", NULL, 0, NULL);
+  mciSendString("open \"Audios//third_part_story.mp3\" alias story3", NULL, 0, NULL);
+
+  storyAudioAction = 0; // Starts by playing BGM if vol acts
+
   iInitialize(screenWidth, screenHeight, "RageRush");
 
   glutKeyboardFunc(myKeyboard);
 
   initImages();
-  loadGameData(); // Load player stats from text file on startup
+  loadGameData();
   levelDefining();
 
-  iSetTimer(30, changeSawbladeFrame); // Animate sawblade nicely
+  iSetTimer(30, changeSawbladeFrame);
+  iSetTimer(50, storyAudioManager);  // Poll for audio state changes
 
   iStart();
   return 0;

@@ -24,6 +24,7 @@ int l3bg[4];
 int l4bg[4];
 int l5bg[4];
 int orbImg, shieldImg;
+int intro1, intro2, intro3, intro4; // Story / win images
 
 int objImg[8] = {
     spikes1,  door,     platform,
@@ -59,6 +60,12 @@ void initImages() {
   sublevel3bg = iLoadImage("Images//sublevel3bg.png");
   sublevel4bg = iLoadImage("Images//sublevel4bg.png");
   door = iLoadImage("Images//door.png");
+  // Story / win images
+  intro1 = iLoadImage("Images//intro1.png");
+  intro2 = iLoadImage("Images//intro2.png");
+  intro3 = iLoadImage("Images//intro3.png");
+  intro4 = iLoadImage("Images//intro4.png");
+
   win = iLoadImage("Images//win.png");
   gameover = iLoadImage("Images//gameover.jpg");
 

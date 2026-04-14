@@ -193,6 +193,71 @@ void colisionDeal(Player &hero) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Moving Platform Physics (Level 5 only)
+// Oscillates the platform endlessly between (innitialX,innitialY) and
+// (finX,finY).  Uses trap.state as a direction flag:
+//   state == 0  →  moving toward fin
+//   state == 1  →  moving back toward initial
+// The hero carry logic mirrors triggerTrap's type-2 carry exactly.
+// ---------------------------------------------------------------------------
+void triggerMovingPlatform(GameObject &trap, Player &hero) {
+  if (!trap.willMove || trap.type != 2)
+    return;
+
+  double oldX = trap.x;
+  double oldY = trap.y;
+
+  // --- Horizontal oscillation ---
+  if (trap.mode == 0 || trap.mode == 2) {
+    if (trap.state == 0) {
+      // Moving toward finX
+      trap.x += trap.speed;
+      if (trap.x >= trap.finX) {
+        trap.x = trap.finX;
+        trap.state = 1; // reverse
+      }
+    } else {
+      // Moving back toward innitialX
+      trap.x -= trap.speed;
+      if (trap.x <= trap.innitialX) {
+        trap.x = trap.innitialX;
+        trap.state = 0; // reverse
+      }
+    }
+  }
+
+  // --- Vertical oscillation ---
+  if (trap.mode == 1 || trap.mode == 2) {
+    if (trap.state == 0) {
+      // Moving toward finY
+      trap.y += trap.speed;
+      if (trap.y >= trap.finY) {
+        trap.y = trap.finY;
+        trap.state = 1; // reverse
+      }
+    } else {
+      // Moving back toward innitialY
+      trap.y -= trap.speed;
+      if (trap.y <= trap.innitialY) {
+        trap.y = trap.innitialY;
+        trap.state = 0; // reverse
+      }
+    }
+  }
+
+  // --- Player carry (identical to triggerTrap type-2 carry) ---
+  double deltaX = trap.x - oldX;
+  double deltaY = trap.y - oldY;
+
+  if ((deltaX != 0 || deltaY != 0) &&
+      onPlatformIdx >= 0 && &obj[onPlatformIdx] == &trap) {
+    hero.x += deltaX;
+    hero.y += deltaY;
+    platformTopY += deltaY;
+  }
+}
+
 // trap moving
 void triggerTrap(GameObject &trap, Player &hero) {
   if (!trap.willMove)
